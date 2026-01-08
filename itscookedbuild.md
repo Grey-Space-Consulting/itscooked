@@ -20,6 +20,9 @@ Next up: Complete Phase 0 (finalize frontend stack and UI system)
 - Maintain a reliable offline-first experience in grocery/cooking contexts.
 - Deliver a clean, modern, mobile-first UI across all core flows.
 
+## Out of scope
+- Xcode project files and the existing SwiftUI/iOS app are not part of this web client build plan; no Xcode changes are required.
+
 ## iOS PWA standards and constraints (verify via Tavily each phase)
 The following items MUST be validated with Tavily before implementation because iOS PWA support changes over time:
 - Web App Manifest support and required fields for iOS installability.
@@ -326,3 +329,4 @@ Status: Not started
 - 2026-01-07: Repo resynced to GitHub; restored missing project files.
 - 2026-01-07: Backend base URL set and UI requirements added across phases.
 - 2026-01-07: Phase 0 re-verification completed; standards snapshot, compatibility matrix, and repo audit notes updated with fresh sources.
+- 2026-01-07: Build plan clarified that Xcode/SwiftUI app items are out of scope for the web client.
