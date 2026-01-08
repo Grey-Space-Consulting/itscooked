@@ -276,6 +276,7 @@ Progress (2026-01-08):
 - Replaced custom OIDC auth usage with Clerk `useAuth()` + `getToken()` in the API client.
 - Updated build tooling for Next.js and refreshed PWA checks to validate `app/layout.tsx` and `providers.tsx`.
 - Lint, typecheck, and `npm run pwa:check` pass after migration.
+- Added `src/middleware.ts` to re-export the Clerk middleware config from `src/proxy.ts` for Next.js runtime.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
@@ -408,3 +409,4 @@ Status: Not started
 - 2026-01-08: Clerk App Router quickstart + Next.js App Router docs verified; migration to Next.js underway for Clerk integration.
 - 2026-01-08: Auth decision updated to Clerk for the web client; self-hosted OIDC plan superseded for this app.
 - 2026-01-08: Phase 2 updated with completed Next.js App Router migration, Clerk wiring, and passing lint/typecheck/PWA checks.
+- 2026-01-08: Added Next.js middleware re-export to ensure Clerk middleware runs via `src/middleware.ts`.
