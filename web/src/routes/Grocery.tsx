@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -15,8 +14,11 @@ import { useOnlineStatus } from "../lib/hooks/useOnlineStatus";
 import { useAppDispatch } from "../lib/state/AppState";
 import { formatShortTime, groupBy } from "../lib/utils";
 
-export function Grocery() {
-  const searchParams = useSearchParams();
+type GroceryProps = {
+  listId?: string | null;
+};
+
+export function Grocery({ listId: listIdProp }: GroceryProps) {
   const { isLoaded, isSignedIn } = useAuth();
   const api = useApiClient();
   const isOnline = useOnlineStatus();
@@ -26,9 +28,7 @@ export function Grocery() {
   const [isLoading, setIsLoading] = useState(false);
 
   const listId =
-    searchParams.get("list") ??
-    process.env.NEXT_PUBLIC_DEFAULT_GROCERY_LIST_ID ??
-    "";
+    listIdProp ?? process.env.NEXT_PUBLIC_DEFAULT_GROCERY_LIST_ID ?? "";
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
