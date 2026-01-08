@@ -93,6 +93,7 @@ Progress (2026-01-07):
 - Hosting decision: Vercel (prod). Custom domain TBD; use Vercel-provided URL until domain is set.
 - Frontend URL (prod): https://itscooked.vercel.app/
 - GitHub repo: https://github.com/Grey-Space-Consulting/itscooked
+- Repo resynced to GitHub; project files restored after remote overwrite.
 - Auth decision: OAuth 2.1 Authorization Code + PKCE (public client) with self-hosted OIDC on the existing backend. Refresh token rotation for public clients per RFC 9700.
 - Proposed backend API contract drafted below (v1). All endpoints are additive and must not break the existing backend.
 Blockers:
@@ -292,3 +293,4 @@ Status: Not started
 - 2026-01-07: Phase 0 updated to confirm self-hosted OIDC and base URL placeholder.
 - 2026-01-07: Frontend production URL set to https://itscooked.vercel.app/.
 - 2026-01-07: GitHub repo set to https://github.com/Grey-Space-Consulting/itscooked.
+- 2026-01-07: Repo resynced to GitHub; restored missing project files.
