@@ -411,4 +411,4 @@ Status: Not started
 - 2026-01-08: Expanded middleware cleanup to cover nested `src/src` paths seen in CI error logs.
 - 2026-01-08: Guarded `useOnlineStatus` against `navigator` access during SSR.
 - 2026-01-08: Removed list feature (routes, UI, API contract, and plan scope) to unblock builds and refocus Phase 2.
-- 2026-01-08: Set Vercel config to Next.js preset with `web/.next` output to resolve output directory mismatch.
+- 2026-01-08: Set Vercel config for Next.js with `.next` output; Root Directory must be `/web` in Vercel project settings.
