@@ -279,7 +279,7 @@ Progress (2026-01-08):
 - Added a prebuild guard to delete any stray `src/middleware.*` files before Next.js runs (proxy-only requirement).
 - Expanded the prebuild guard to remove any root or nested `src/src/middleware.*` entries if present.
 - Made `useOnlineStatus` SSR-safe to prevent pre-render crashes.
-- Removed grocery routes and UI; grocery feature removed from scope.
+- Removed list routes and UI; list feature removed from scope.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
@@ -410,4 +410,4 @@ Status: Not started
 - 2026-01-08: Added prebuild cleanup to remove legacy middleware files that conflict with `src/proxy.ts`.
 - 2026-01-08: Expanded middleware cleanup to cover nested `src/src` paths seen in CI error logs.
 - 2026-01-08: Guarded `useOnlineStatus` against `navigator` access during SSR.
-- 2026-01-08: Removed grocery feature (routes, UI, API contract, and plan scope) to unblock builds and refocus Phase 2.
+- 2026-01-08: Removed list feature (routes, UI, API contract, and plan scope) to unblock builds and refocus Phase 2.

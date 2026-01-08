@@ -1,7 +1,7 @@
 {
   "name": "ItsCooked",
   "short_name": "ItsCooked",
-  "description": "ItsCooked PWA for recipes, cooking, and smart grocery lists.",
+  "description": "ItsCooked PWA for recipes and cooking.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
