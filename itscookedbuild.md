@@ -279,9 +279,11 @@ Progress (2026-01-08):
 - Moved Clerk auth UI into the client `AppShell` to avoid passing non-serializable auth slots from the server layout.
 - Removed `src/middleware.ts` to resolve Next.js build error (proxy + middleware conflict); `src/proxy.ts` is now the sole middleware entry.
 - Next.js build updated `tsconfig.json` and `next-env.d.ts` to align with recommended settings.
+- Moved `themeColor` into the `viewport` export to satisfy Next.js App Router metadata requirements.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
+- Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
@@ -414,3 +416,4 @@ Status: Not started
 - 2026-01-08: Clerk auth UI moved into the client app shell for Next.js RSC compatibility.
 - 2026-01-08: Removed middleware re-export after build error (Next requires only `src/proxy.ts`).
 - 2026-01-08: Next.js build normalized tsconfig + next-env TypeScript settings.
+- 2026-01-08: Theme color moved from metadata to viewport to remove Next.js warnings.

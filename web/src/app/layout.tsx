@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   title: "ItsCooked",
   description: "ItsCooked PWA for recipes, cooking, and smart grocery lists.",
   manifest: "/manifest.webmanifest",
-  themeColor: "#16120F",
   icons: {
     icon: "/icons/icon-192.png",
     apple: "/icons/apple-touch-icon.png"
@@ -28,7 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  viewportFit: "cover"
+  viewportFit: "cover",
+  themeColor: "#16120F"
 };
 
 export default function RootLayout({
