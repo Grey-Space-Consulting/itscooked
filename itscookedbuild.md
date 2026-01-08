@@ -83,6 +83,11 @@ Record results here each time they are checked:
     - @types/react: https://www.npmjs.com/package/@types/react
     - @types/react-dom: https://www.npmjs.com/package/@types/react-dom
     - Prettier: https://www.npmjs.com/package/prettier
+  - 2026-01-07: Lighthouse PWA audit deprecation check (Tavily).
+    - Lighthouse changelog (PWA deprecation warning): https://github.com/GoogleChrome/lighthouse/blob/main/changelog.md
+    - Lighthouse PR noting PWA category deprecation in v12+: https://github.com/GoogleChrome/lighthouse/pull/15741
+    - Chrome DevTools PWA guidance: https://developer.chrome.com/docs/devtools/progressive-web-apps/
+    - Update to install criteria (Chrome): https://developer.chrome.com/blog/update-install-criteria
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -228,7 +233,8 @@ Progress (2026-01-07):
 - Linting, formatting, type checks, and CI workflow configured.
 - npm install completed; lint, typecheck, and production build pass locally.
 - Added `npm run dev:host` script to simplify device validation.
-- Pending: iOS Safari validation (home screen install + navigation) and Lighthouse PWA checks.
+- Lighthouse CLI v13 removed PWA category (per Lighthouse deprecation notes); use Chrome DevTools PWA checklist + manual offline/start_url verification instead.
+- Pending: iOS Safari validation (home screen install + navigation) and DevTools PWA checklist/offline verification.
 
 ### Phase 2: Backend integration and auth
 Goal: Connect to the existing backend safely.
@@ -363,3 +369,4 @@ Status: Not started
 - 2026-01-07: Phase 1 tooling run; lint, typecheck, and production build pass locally.
 - 2026-01-07: Phase 1 updated with device validation script and pending iOS/Lighthouse checklist.
 - 2026-01-07: Phase 1 added minimal app-shell caching in the service worker for installability baseline (no API caching).
+- 2026-01-07: Phase 1 updated to note Lighthouse PWA category deprecation and DevTools PWA checklist fallback.
