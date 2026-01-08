@@ -3,8 +3,8 @@
 Last updated: 2026-01-07
 Owner: AI coding agent (Codex)
 Status: Draft
-Current phase: Phase 0 (in progress)
-Next up: Complete Phase 0 (finalize frontend stack and UI system)
+Current phase: Phase 1 (in progress)
+Next up: Complete Phase 1 (app foundation and scaffolding)
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -66,6 +66,23 @@ Record results here each time they are checked:
     - caniuse data: Background Sync API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/background-sync.json
     - caniuse data: Screen Wake Lock API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/wake-lock.json
     - Periodic Background Sync API overview: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/how-to/background-syncs
+  - 2026-01-07: Phase 1 stack/version verification (Tavily; npm sources).
+    - Vite: https://www.npmjs.com/package/vite
+    - @vitejs/plugin-react: https://www.npmjs.com/package/@vitejs/plugin-react
+    - React: https://www.npmjs.com/package/react
+    - React DOM: https://www.npmjs.com/package/react-dom
+    - React Router: https://www.npmjs.com/package/react-router
+    - React Router DOM (re-export note): https://www.npmjs.com/package/react-router-dom
+    - TypeScript: https://www.npmjs.com/package/typescript
+    - ESLint: https://www.npmjs.com/package/eslint
+    - @eslint/js: https://www.npmjs.com/package/@eslint/js
+    - @typescript-eslint/eslint-plugin: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
+    - @typescript-eslint/parser: https://www.npmjs.com/package/@typescript-eslint/parser
+    - eslint-plugin-react: https://www.npmjs.com/package/eslint-plugin-react
+    - eslint-plugin-react-hooks: https://www.npmjs.com/package/eslint-plugin-react-hooks
+    - @types/react: https://www.npmjs.com/package/@types/react
+    - @types/react-dom: https://www.npmjs.com/package/@types/react-dom
+    - Prettier: https://www.npmjs.com/package/prettier
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -104,11 +121,11 @@ Deliverables:
 Acceptance criteria:
 - All items in the Tavily check log are populated with sources and dates.
 - Backend integration points are documented.
-Status: In progress
+Status: Complete (2026-01-07)
 Progress (2026-01-07):
 - Repo audit confirms only SwiftUI template files (ContentView/Item/itscookedApp) and local SwiftData storage; no backend endpoints, auth flows, or API base URL config detected.
 - Phase 0 Tavily re-verification completed; sources refreshed for manifest/A2HS, service workers/caching, web push, share, background sync, wake lock, and storage quotas.
-- Architecture decision: new web client will live in a separate top-level web app directory and deploy independently from the existing SwiftUI app; framework selection deferred pending Tavily checks.
+- Architecture decision: new web client will live in `/web` and deploy independently from the existing SwiftUI app; stack set to Vite + React + TypeScript + React Router with a custom UI system and React context state.
 - Hosting decision: Vercel (prod). Custom domain TBD; use Vercel-provided URL until domain is set.
 - Frontend URL (prod): https://itscooked.vercel.app/
 - GitHub repo: https://github.com/Grey-Space-Consulting/itscooked
@@ -200,7 +217,16 @@ Acceptance criteria:
 - App builds and runs locally on iOS Safari.
 - Lighthouse PWA checks pass for baseline requirements.
 - Core screens render with the defined UI system and responsive layout.
-Status: Not started
+Status: In progress
+Progress (2026-01-07):
+- Web client scaffolded under `/web` with Vite + React + TypeScript and React Router.
+- Routing, app shell, and placeholder views added for Home, Recipes, Grocery, and Settings.
+- UI system tokens and base components (buttons, inputs, cards, lists) implemented with responsive layout primitives.
+- API client skeleton and state provider stubs added for future backend integration.
+- PWA manifest, icons, and service worker registration scaffolded.
+- Linting, formatting, type checks, and CI workflow configured.
+- npm install completed; lint, typecheck, and production build pass locally.
+- Pending: iOS Safari validation and Lighthouse PWA checks on device.
 
 ### Phase 2: Backend integration and auth
 Goal: Connect to the existing backend safely.
@@ -330,3 +356,6 @@ Status: Not started
 - 2026-01-07: Backend base URL set and UI requirements added across phases.
 - 2026-01-07: Phase 0 re-verification completed; standards snapshot, compatibility matrix, and repo audit notes updated with fresh sources.
 - 2026-01-07: Build plan clarified that Xcode/SwiftUI app items are out of scope for the web client.
+- 2026-01-07: Phase 1 started; web client scaffolded in `/web` with Vite + React + TypeScript, routing, UI system primitives, and PWA manifest/service worker stubs.
+- 2026-01-07: Phase 0 marked complete with stack selection and updated architecture decision summary.
+- 2026-01-07: Phase 1 tooling run; lint, typecheck, and production build pass locally.
