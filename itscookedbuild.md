@@ -285,6 +285,7 @@ Progress (2026-01-08):
 - Added a prebuild guard to delete any stray `src/middleware.*` files before Next.js runs (proxy-only requirement).
 - Expanded the prebuild guard to remove any root or nested `src/src/middleware.*` entries if present.
 - Made `useOnlineStatus` SSR-safe to prevent pre-render crashes.
+- Wrapped the Grocery page in a Suspense boundary to satisfy `useSearchParams` requirements during prerender.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
@@ -429,3 +430,4 @@ Status: Not started
 - 2026-01-08: Added prebuild cleanup to remove legacy middleware files that conflict with `src/proxy.ts`.
 - 2026-01-08: Expanded middleware cleanup to cover nested `src/src` paths seen in CI error logs.
 - 2026-01-08: Guarded `useOnlineStatus` against `navigator` access during SSR.
+- 2026-01-08: Added Suspense boundary for `/grocery` to fix `useSearchParams` prerender error.
