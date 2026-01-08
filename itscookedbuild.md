@@ -146,7 +146,7 @@ Status: Complete (2026-01-07)
 Progress (2026-01-07):
 - Repo audit confirms only SwiftUI template files (ContentView/Item/itscookedApp) and local SwiftData storage; no backend endpoints, auth flows, or API base URL config detected.
 - Phase 0 Tavily re-verification completed; sources refreshed for manifest/A2HS, service workers/caching, web push, share, background sync, wake lock, and storage quotas.
-- Architecture decision: new web client will live in `/web` and deploy independently from the existing SwiftUI app; stack set to Vite + React + TypeScript + React Router with a custom UI system and React context state.
+- Architecture decision: new web client will live in `/web` and deploy independently from the existing SwiftUI app; original Vite + React Router plan was superseded by Next.js App Router + React + TypeScript + Clerk with a custom UI system and React context state.
 - Hosting decision: Vercel (prod). Custom domain TBD; use Vercel-provided URL until domain is set.
 - Frontend URL (prod): https://itscooked.vercel.app/
 - GitHub repo: https://github.com/Grey-Space-Consulting/itscooked
@@ -187,7 +187,7 @@ User + preferences:
 - GET `/v1/me`
 - PATCH `/v1/me`
 - GET `/v1/preferences`
-- PATCH `/v1/preferences` (units, aisle ordering, pantry defaults)
+- PATCH `/v1/preferences` (units, cooking defaults)
 
 Recipes:
 - GET `/v1/recipes` (list, pagination)
@@ -249,7 +249,7 @@ Progress (2026-01-07):
 - Added `npm run dev:host` script to simplify device validation.
 - Lighthouse CLI v13 removed PWA category (per Lighthouse deprecation notes); use Chrome DevTools PWA checklist + manual offline/start_url verification instead.
 - Added `npm run pwa:check` static validation script; checks pass locally.
-- Added root-level `vercel.json` to build the `/web` app and provide SPA rewrites for Vercel.
+- Added root-level `vercel.json` to build the `/web` app on Vercel (legacy SPA rewrites removed after Next.js migration).
 - Pending: iOS Safari validation (home screen install + navigation) and DevTools PWA checklist/offline verification.
 
 ### Phase 2: Backend integration and auth
@@ -280,6 +280,7 @@ Progress (2026-01-08):
 - Expanded the prebuild guard to remove any root or nested `src/src/middleware.*` entries if present.
 - Made `useOnlineStatus` SSR-safe to prevent pre-render crashes.
 - Removed list routes and UI; list feature removed from scope.
+- Updated Home/Settings copy to remove list references and cleaned unused grocery env typing.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.

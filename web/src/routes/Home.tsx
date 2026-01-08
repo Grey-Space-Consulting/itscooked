@@ -6,21 +6,21 @@ import { TextInput } from "../components/ui/Input";
 import { List } from "../components/ui/List";
 import { Section } from "../components/ui/Section";
 
-const pantryPulse = [
+const recentRecipes = [
   {
-    title: "Ginger",
-    subtitle: "Low stock in pantry",
-    trailing: <span className="badge is-warm">Refill</span>
+    title: "Citrus salad",
+    subtitle: "Added today",
+    trailing: <span className="badge">New</span>
   },
   {
-    title: "Coconut milk",
-    subtitle: "Swap if unavailable",
-    trailing: <span className="badge">Flexible</span>
+    title: "Smoked paprika tofu",
+    subtitle: "Parsed ingredients",
+    trailing: <span className="badge">Ready</span>
   },
   {
-    title: "Limes",
-    subtitle: "2 recipes incoming",
-    trailing: <span className="badge">Tonight</span>
+    title: "Herb rice bowl",
+    subtitle: "Queued for review",
+    trailing: <span className="badge is-warm">Next</span>
   }
 ];
 
@@ -28,7 +28,7 @@ export function Home() {
   return (
     <div className="page stack">
       <section className="hero">
-        <h1 className="hero-title">Cook smarter, shop lighter.</h1>
+        <h1 className="hero-title">Cook smarter, plan faster.</h1>
         <p className="hero-subtitle">
           Plan this week, save favorite dishes, and turn links into polished
           recipes.
@@ -51,22 +51,22 @@ export function Home() {
           </div>
         </Card>
         <Card
-          title="Smart list"
-          meta="12 items, 4 aisles"
-          action={<span className="badge is-warm">Ready</span>}
+          title="Import queue"
+          meta="2 links processing"
+          action={<span className="badge is-warm">Queued</span>}
         >
           <div className="stack">
-            <p className="card-meta">Auto-merged from recent recipes.</p>
-            <Button variant="ghost">See list view</Button>
+            <p className="card-meta">Auto-parsed from your saved recipe links.</p>
+            <Button variant="ghost">Review imports</Button>
           </div>
         </Card>
       </div>
 
       <Section
-        title="Pantry pulse"
-        subtitle="What needs attention before your next shop"
+        title="Recent recipes"
+        subtitle="Fresh imports ready for review"
       >
-        <List items={pantryPulse} />
+        <List items={recentRecipes} />
       </Section>
 
       <Section

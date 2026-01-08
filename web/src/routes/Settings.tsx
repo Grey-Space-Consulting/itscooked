@@ -87,10 +87,10 @@ export function Settings() {
     <div className="page stack">
       <Section
         title="Preferences"
-        subtitle="Personalize how recipes and lists behave"
+        subtitle="Personalize how recipes behave"
       >
         <div className="grid grid-2">
-          <Card title="Kitchen defaults" meta="Aisle flow and pantry settings">
+          <Card title="Kitchen defaults" meta="Cooking defaults and units">
             <div className="stack">
               <TextInput label="Primary kitchen" placeholder="Home" />
               <TextInput label="Default units" placeholder="Metric" />
