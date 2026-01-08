@@ -88,6 +88,10 @@ Record results here each time they are checked:
     - Lighthouse PR noting PWA category deprecation in v12+: https://github.com/GoogleChrome/lighthouse/pull/15741
     - Chrome DevTools PWA guidance: https://developer.chrome.com/docs/devtools/progressive-web-apps/
     - Update to install criteria (Chrome): https://developer.chrome.com/blog/update-install-criteria
+  - 2026-01-07: Vercel monorepo + build settings + rewrites (Tavily).
+    - Monorepos (root directory selection): https://vercel.com/docs/monorepos
+    - Configuring a Build (root directory, build/output/install commands): https://vercel.com/docs/builds/configure-a-build
+    - Project configuration rewrites (vercel.ts examples): https://vercel.com/docs/project-configuration/vercel-ts
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -235,6 +239,7 @@ Progress (2026-01-07):
 - Added `npm run dev:host` script to simplify device validation.
 - Lighthouse CLI v13 removed PWA category (per Lighthouse deprecation notes); use Chrome DevTools PWA checklist + manual offline/start_url verification instead.
 - Added `npm run pwa:check` static validation script; checks pass locally.
+- Added root-level `vercel.json` to build the `/web` app and provide SPA rewrites for Vercel.
 - Pending: iOS Safari validation (home screen install + navigation) and DevTools PWA checklist/offline verification.
 
 ### Phase 2: Backend integration and auth
@@ -372,3 +377,4 @@ Status: Not started
 - 2026-01-07: Phase 1 added minimal app-shell caching in the service worker for installability baseline (no API caching).
 - 2026-01-07: Phase 1 updated to note Lighthouse PWA category deprecation and DevTools PWA checklist fallback.
 - 2026-01-07: Phase 1 added static PWA validation script; checks pass locally.
+- 2026-01-07: Added `vercel.json` to build `/web` on Vercel and rewrite SPA routes to `index.html`.
