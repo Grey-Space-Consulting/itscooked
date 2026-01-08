@@ -268,6 +268,8 @@ Progress (2026-01-08):
 - Wired grocery list view to backend data using `VITE_DEFAULT_GROCERY_LIST_ID` or `?list=` parameter.
 - Added account session UI in Settings with sign-in/out controls and profile fetch.
 - Added env template + typings, plus recipe detail offline/error callouts and linted node script globals.
+Pending:
+- Configure OIDC + API env values and verify live backend responses on device.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
