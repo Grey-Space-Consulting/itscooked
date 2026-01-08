@@ -1,3 +1,5 @@
+"use client";
+
 import type { InputHTMLAttributes } from "react";
 import { useId } from "react";
 import { cx } from "../../lib/utils";

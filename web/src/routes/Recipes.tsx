@@ -1,11 +1,12 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
-import { Button } from "../components/ui/Button";
+import Link from "next/link";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Card } from "../components/ui/Card";
 import { Callout } from "../components/ui/Callout";
 import { TextInput } from "../components/ui/Input";
 import { Section } from "../components/ui/Section";
-import { useAuth } from "../lib/auth";
 import { fetchRecipes } from "../lib/api/endpoints";
 import { useApiClient } from "../lib/api/useApiClient";
 import type { RecipeSummary } from "../lib/api/types";
@@ -14,7 +15,7 @@ import { useAppDispatch } from "../lib/state/AppState";
 import { formatRelativeTime, formatShortTime } from "../lib/utils";
 
 export function Recipes() {
-  const { status, login, config } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   const api = useApiClient();
   const isOnline = useOnlineStatus();
   const dispatch = useAppDispatch();
@@ -24,15 +25,15 @@ export function Recipes() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (isLoaded && !isSignedIn) {
       setRecipes([]);
       setError(null);
       setIsLoading(false);
     }
-  }, [status]);
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
-    if (status !== "authenticated" || !isOnline) {
+    if (!isLoaded || !isSignedIn || !isOnline) {
       return;
     }
 
@@ -55,7 +56,8 @@ export function Recipes() {
         if (!isActive) {
           return;
         }
-        const message = err instanceof Error ? err.message : "Unable to load recipes.";
+        const message =
+          err instanceof Error ? err.message : "Unable to load recipes.";
         setError(message);
       } finally {
         if (isActive) {
@@ -69,7 +71,7 @@ export function Recipes() {
     return () => {
       isActive = false;
     };
-  }, [api, dispatch, isOnline, status]);
+  }, [api, dispatch, isLoaded, isOnline, isSignedIn]);
 
   const filteredRecipes = useMemo(() => {
     const trimmedQuery = query.trim().toLowerCase();
@@ -82,11 +84,7 @@ export function Recipes() {
     );
   }, [query, recipes]);
 
-  const showAuthPrompt =
-    status === "unauthenticated" || status === "disabled" || status === "error";
-  const authDescription = config
-    ? "Sign in to sync recipes from the backend."
-    : "Auth is not configured yet. Add OIDC env values to enable sign-in.";
+  const showAuthPrompt = isLoaded && !isSignedIn;
 
   return (
     <div className="page stack">
@@ -96,11 +94,13 @@ export function Recipes() {
       >
         {showAuthPrompt && (
           <Callout
-            title="Connect to ItsCooked"
-            description={authDescription}
-            variant={config ? "info" : "warning"}
+            title="Sign in to sync"
+            description="Connect your account to load your latest recipes."
             action={
-              config ? <Button onClick={login}>Sign in</Button> : undefined
+              <div className="auth-actions">
+                <SignInButton />
+                <SignUpButton />
+              </div>
             }
           />
         )}
@@ -137,7 +137,7 @@ export function Recipes() {
         {!isLoading && filteredRecipes.length === 0 && (
           <Card>
             <p className="card-meta">
-              {status === "authenticated"
+              {isSignedIn
                 ? "No recipes yet. Add a new URL to start importing."
                 : "Sign in to see your recipe library."}
             </p>
@@ -151,7 +151,7 @@ export function Recipes() {
               title={recipe.title}
               meta={formatRelativeTime(recipe.updatedAt)}
               action={
-                <Link className="badge" to={`/recipes/${recipe.id}`}>
+                <Link className="badge" href={`/recipes/${recipe.id}`}>
                   Open
                 </Link>
               }

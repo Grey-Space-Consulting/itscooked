@@ -36,14 +36,11 @@ const requiredIcons = [
   }
 ];
 
-const requiredHtmlSnippets = [
-  { label: "manifest link", regex: /rel=["']manifest["']/ },
-  { label: "theme-color meta", regex: /name=["']theme-color["']/ },
-  {
-    label: "apple-mobile-web-app-capable meta",
-    regex: /name=["']apple-mobile-web-app-capable["']/
-  },
-  { label: "apple-touch-icon link", regex: /apple-touch-icon/ }
+const requiredLayoutSnippets = [
+  { label: "manifest metadata", regex: /manifest:\s*["']\/manifest\.webmanifest["']/ },
+  { label: "themeColor metadata", regex: /themeColor:\s*["']#[0-9a-fA-F]+["']/ },
+  { label: "appleWebApp metadata", regex: /appleWebApp:\s*\{/ },
+  { label: "apple icon metadata", regex: /apple:\s*["']\/icons\/apple-touch-icon\.png["']/ }
 ];
 
 const checks = [];
@@ -131,17 +128,17 @@ async function checkManifest() {
   }
 }
 
-async function checkHtml() {
-  const htmlPath = join(root, "index.html");
-  await ensureFile(htmlPath, "index.html");
+async function checkLayout() {
+  const layoutPath = join(srcDir, "app", "layout.tsx");
+  await ensureFile(layoutPath, "src/app/layout.tsx");
 
   try {
-    const html = await readFile(htmlPath, "utf8");
-    for (const snippet of requiredHtmlSnippets) {
-      if (snippet.regex.test(html)) {
-        record(true, `index.html includes ${snippet.label}`);
+    const layout = await readFile(layoutPath, "utf8");
+    for (const snippet of requiredLayoutSnippets) {
+      if (snippet.regex.test(layout)) {
+        record(true, `layout includes ${snippet.label}`);
       } else {
-        record(false, `index.html missing ${snippet.label}`);
+        record(false, `layout missing ${snippet.label}`);
       }
     }
   } catch {
@@ -172,15 +169,15 @@ async function checkServiceWorker() {
 }
 
 async function checkRegistration() {
-  const mainPath = join(srcDir, "main.tsx");
-  await ensureFile(mainPath, "src/main.tsx");
+  const providersPath = join(srcDir, "app", "providers.tsx");
+  await ensureFile(providersPath, "src/app/providers.tsx");
 
   try {
-    const main = await readFile(mainPath, "utf8");
-    if (main.includes("registerServiceWorker")) {
-      record(true, "service worker registration is wired in main.tsx");
+    const providers = await readFile(providersPath, "utf8");
+    if (providers.includes("registerServiceWorker")) {
+      record(true, "service worker registration is wired in providers.tsx");
     } else {
-      record(false, "service worker registration missing in main.tsx");
+      record(false, "service worker registration missing in providers.tsx");
     }
   } catch {
     // Missing file already recorded.
@@ -190,7 +187,7 @@ async function checkRegistration() {
 async function run() {
   await checkManifest();
   await checkIcons();
-  await checkHtml();
+  await checkLayout();
   await checkServiceWorker();
   await checkRegistration();
 

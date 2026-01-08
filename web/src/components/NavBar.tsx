@@ -1,4 +1,7 @@
-import { NavLink } from "react-router";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cx } from "../lib/utils";
 
 const navItems = [
@@ -9,21 +12,25 @@ const navItems = [
 ];
 
 export function NavBar() {
+  const pathname = usePathname();
+
   return (
     <nav className="app-nav">
       <div className="app-nav-inner">
         {navItems.map((item) => (
-          <NavLink
+          <Link
             key={item.to}
-            to={item.to}
-            end={item.to === "/"}
-            className={({ isActive }) =>
-              cx("nav-link", isActive && "active")
-            }
+            href={item.to}
+            className={cx(
+              "nav-link",
+              item.to === "/"
+                ? pathname === "/" && "active"
+                : pathname.startsWith(item.to) && "active"
+            )}
           >
             <span className="nav-icon" aria-hidden="true" />
             <span>{item.label}</span>
-          </NavLink>
+          </Link>
         ))}
       </div>
     </nav>

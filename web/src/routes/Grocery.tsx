@@ -1,11 +1,13 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "next/navigation";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Callout } from "../components/ui/Callout";
 import { List } from "../components/ui/List";
 import { Section } from "../components/ui/Section";
-import { useAuth } from "../lib/auth";
 import { fetchGroceryList } from "../lib/api/endpoints";
 import { useApiClient } from "../lib/api/useApiClient";
 import type { GroceryList, GroceryListItem } from "../lib/api/types";
@@ -14,8 +16,8 @@ import { useAppDispatch } from "../lib/state/AppState";
 import { formatShortTime, groupBy } from "../lib/utils";
 
 export function Grocery() {
-  const [searchParams] = useSearchParams();
-  const { status, login, config } = useAuth();
+  const searchParams = useSearchParams();
+  const { isLoaded, isSignedIn } = useAuth();
   const api = useApiClient();
   const isOnline = useOnlineStatus();
   const dispatch = useAppDispatch();
@@ -23,21 +25,21 @@ export function Grocery() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const listId =
+    searchParams.get("list") ??
+    process.env.NEXT_PUBLIC_DEFAULT_GROCERY_LIST_ID ??
+    "";
+
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (isLoaded && !isSignedIn) {
       setList(null);
       setError(null);
       setIsLoading(false);
     }
-  }, [status]);
-
-  const listId =
-    searchParams.get("list") ??
-    import.meta.env.VITE_DEFAULT_GROCERY_LIST_ID ??
-    "";
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
-    if (status !== "authenticated" || !listId || !isOnline) {
+    if (!isLoaded || !isSignedIn || !listId || !isOnline) {
       return;
     }
 
@@ -74,7 +76,7 @@ export function Grocery() {
     return () => {
       isActive = false;
     };
-  }, [api, dispatch, isOnline, listId, status]);
+  }, [api, dispatch, isLoaded, isOnline, isSignedIn, listId]);
 
   const groupedItems = useMemo(() => {
     if (!list?.items?.length) {
@@ -86,30 +88,28 @@ export function Grocery() {
     ).sort(([a], [b]) => a.localeCompare(b));
   }, [list]);
 
-  const showAuthPrompt =
-    status === "unauthenticated" || status === "disabled" || status === "error";
-  const authDescription = config
-    ? "Sign in to sync grocery lists from the backend."
-    : "Auth is not configured yet. Add OIDC env values to enable sign-in.";
+  const showAuthPrompt = isLoaded && !isSignedIn;
 
   return (
     <div className="page stack">
       <Section title="Grocery list" subtitle="Merged from your next three recipes">
         {showAuthPrompt && (
           <Callout
-            title="Connect to ItsCooked"
-            description={authDescription}
-            variant={config ? "info" : "warning"}
+            title="Sign in to sync"
+            description="Connect your account to load grocery lists."
             action={
-              config ? <Button onClick={login}>Sign in</Button> : undefined
+              <div className="auth-actions">
+                <SignInButton />
+                <SignUpButton />
+              </div>
             }
           />
         )}
 
-        {!listId && status === "authenticated" && (
+        {!listId && isSignedIn && (
           <Callout
             title="Choose a list to view"
-            description="Set VITE_DEFAULT_GROCERY_LIST_ID or pass ?list= in the URL."
+            description="Set NEXT_PUBLIC_DEFAULT_GROCERY_LIST_ID or pass ?list= in the URL."
             variant="warning"
           />
         )}

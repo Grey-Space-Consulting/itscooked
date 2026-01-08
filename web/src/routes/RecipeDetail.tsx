@@ -1,11 +1,13 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
-import { Button } from "../components/ui/Button";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Card } from "../components/ui/Card";
 import { Callout } from "../components/ui/Callout";
 import { List } from "../components/ui/List";
 import { Section } from "../components/ui/Section";
-import { useAuth } from "../lib/auth";
 import { fetchRecipe } from "../lib/api/endpoints";
 import { useApiClient } from "../lib/api/useApiClient";
 import type { RecipeDetail as RecipeDetailType } from "../lib/api/types";
@@ -13,8 +15,9 @@ import { useOnlineStatus } from "../lib/hooks/useOnlineStatus";
 import { formatRelativeTime } from "../lib/utils";
 
 export function RecipeDetail() {
-  const { id } = useParams();
-  const { status, login } = useAuth();
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : "";
+  const { isLoaded, isSignedIn } = useAuth();
   const api = useApiClient();
   const isOnline = useOnlineStatus();
   const [recipe, setRecipe] = useState<RecipeDetailType | null>(null);
@@ -22,12 +25,15 @@ export function RecipeDetail() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status !== "authenticated") {
-      return;
+    if (!isLoaded || !isSignedIn) {
+      setRecipe(null);
+      setError(null);
+      setIsLoading(false);
     }
+  }, [isLoaded, isSignedIn]);
 
-    if (!id) {
-      setError("Missing recipe id.");
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !id) {
       return;
     }
 
@@ -50,7 +56,8 @@ export function RecipeDetail() {
         if (!isActive) {
           return;
         }
-        const message = err instanceof Error ? err.message : "Unable to load recipe.";
+        const message =
+          err instanceof Error ? err.message : "Unable to load recipe.";
         setError(message);
       } finally {
         if (isActive) {
@@ -64,7 +71,7 @@ export function RecipeDetail() {
     return () => {
       isActive = false;
     };
-  }, [api, id, isOnline, status]);
+  }, [api, id, isLoaded, isOnline, isSignedIn]);
 
   const ingredientItems = useMemo(() => {
     if (!recipe?.ingredients?.length) {
@@ -99,7 +106,7 @@ export function RecipeDetail() {
       }));
   }, [recipe]);
 
-  if (status !== "authenticated") {
+  if (isLoaded && !isSignedIn) {
     return (
       <div className="page stack">
         <Section
@@ -112,8 +119,9 @@ export function RecipeDetail() {
                 Connect your account to fetch recipe details from the backend.
               </p>
               <div className="hero-actions">
-                <Button onClick={login}>Sign in</Button>
-                <Link className="btn btn-ghost" to="/recipes">
+                <SignInButton />
+                <SignUpButton />
+                <Link className="btn btn-ghost" href="/recipes">
                   Back to recipes
                 </Link>
               </div>
@@ -162,7 +170,7 @@ export function RecipeDetail() {
               </p>
             )}
             <div className="hero-actions">
-              <Link className="btn btn-outline" to="/recipes">
+              <Link className="btn btn-outline" href="/recipes">
                 Back to recipes
               </Link>
               {recipe?.sourceUrl && (

@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 const defaultConfig: ApiConfig = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? ""
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
 };
 
 export async function apiRequest<T>(

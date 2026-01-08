@@ -1,17 +1,28 @@
+"use client";
+
 import { useEffect, useState } from "react";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useAuth,
+  useUser
+} from "@clerk/nextjs";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Callout } from "../components/ui/Callout";
 import { TextInput } from "../components/ui/Input";
 import { Section } from "../components/ui/Section";
-import { useAuth } from "../lib/auth";
 import { fetchMe } from "../lib/api/endpoints";
 import { useApiClient } from "../lib/api/useApiClient";
 import type { UserProfile } from "../lib/api/types";
 import { useOnlineStatus } from "../lib/hooks/useOnlineStatus";
 
 export function Settings() {
-  const { status, login, logout, error, config } = useAuth();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const { user } = useUser();
   const api = useApiClient();
   const isOnline = useOnlineStatus();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -19,14 +30,15 @@ export function Settings() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (!isLoaded || !isSignedIn) {
       setProfile(null);
       setProfileError(null);
+      setIsLoading(false);
     }
-  }, [status]);
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
-    if (status !== "authenticated" || !isOnline) {
+    if (!isLoaded || !isSignedIn || !isOnline) {
       return;
     }
 
@@ -45,7 +57,8 @@ export function Settings() {
         if (!isActive) {
           return;
         }
-        const message = err instanceof Error ? err.message : "Unable to load profile.";
+        const message =
+          err instanceof Error ? err.message : "Unable to load profile.";
         setProfileError(message);
       } finally {
         if (isActive) {
@@ -59,14 +72,16 @@ export function Settings() {
     return () => {
       isActive = false;
     };
-  }, [api, isOnline, status]);
+  }, [api, isLoaded, isOnline, isSignedIn]);
 
-  const sessionLabel =
-    status === "authenticated"
+  const sessionLabel = !isLoaded
+    ? "Checking session"
+    : isSignedIn
       ? "Connected"
-      : status === "loading"
-        ? "Checking session"
-        : "Not signed in";
+      : "Not signed in";
+
+  const displayName = profile?.name ?? user?.fullName ?? "";
+  const displayEmail = profile?.email ?? user?.primaryEmailAddress?.emailAddress ?? "";
 
   return (
     <div className="page stack">
@@ -91,16 +106,18 @@ export function Settings() {
       </Section>
 
       <Section title="Account" subtitle="Session and security">
-        {error && (
-          <Callout title="Auth error" description={error} variant="error" />
-        )}
-        {!config && (
+        <SignedOut>
           <Callout
-            title="Auth not configured"
-            description="Add VITE_OIDC_ISSUER and VITE_OIDC_CLIENT_ID to enable sign-in."
-            variant="warning"
+            title="Sign in to sync"
+            description="Use your Clerk account to access your saved recipes."
+            action={
+              <div className="auth-actions">
+                <SignInButton />
+                <SignUpButton />
+              </div>
+            }
           />
-        )}
+        </SignedOut>
         {profileError && (
           <Callout
             title="Profile sync failed"
@@ -108,33 +125,37 @@ export function Settings() {
             variant="error"
           />
         )}
+        {!isOnline && (
+          <Callout
+            title="You're offline"
+            description="Reconnect to update profile details."
+            variant="warning"
+          />
+        )}
         <Card title="Session" meta={sessionLabel}>
           <div className="stack">
             <TextInput
               label="Name"
               placeholder="Chef in residence"
-              value={profile?.name ?? ""}
+              value={displayName}
               readOnly
             />
             <TextInput
               label="Email"
               placeholder="you@example.com"
-              value={profile?.email ?? ""}
+              value={displayEmail}
               readOnly
             />
             {isLoading && (
               <p className="card-meta">Loading profile details...</p>
             )}
             <div className="hero-actions">
-              {status === "authenticated" ? (
-                <Button variant="ghost" onClick={logout}>
+              <SignedIn>
+                <UserButton />
+                <Button variant="ghost" onClick={() => signOut()}>
                   Sign out
                 </Button>
-              ) : (
-                <Button onClick={login} disabled={!config}>
-                  Sign in
-                </Button>
-              )}
+              </SignedIn>
             </div>
           </div>
         </Card>

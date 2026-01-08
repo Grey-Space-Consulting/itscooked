@@ -1,16 +1,22 @@
+"use client";
+
 import { useMemo } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { createApiClient } from "./client";
-import { useAuth } from "../auth";
 
 export function useApiClient() {
-  const { getAccessToken, handleUnauthorized } = useAuth();
+  const { getToken, isSignedIn, signOut } = useAuth();
 
   return useMemo(
     () =>
       createApiClient({
-        getAccessToken,
-        onUnauthorized: handleUnauthorized
+        getAccessToken: () => (isSignedIn ? getToken() : null),
+        onUnauthorized: () => {
+          if (isSignedIn) {
+            void signOut();
+          }
+        }
       }),
-    [getAccessToken, handleUnauthorized]
+    [getToken, isSignedIn, signOut]
   );
 }

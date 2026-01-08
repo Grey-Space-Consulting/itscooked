@@ -4,7 +4,7 @@ Last updated: 2026-01-08
 Owner: AI coding agent (Codex)
 Status: Draft
 Current phase: Phase 2 (in progress)
-Next up: Complete Phase 2 (backend integration and auth)
+Next up: Verify backend integration with Clerk tokens and confirm live data flows
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -98,6 +98,12 @@ Record results here each time they are checked:
     - OAuth 2.0 for Browser-Based Apps (current draft): https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps
     - PKCE (RFC 7636): https://www.rfc-editor.org/rfc/rfc7636
     - OpenID Connect Discovery 1.0: https://openid.net/specs/openid-connect-discovery-1_0.html
+  - 2026-01-08: Clerk Next.js App Router quickstart verification (Tavily).
+    - Clerk Next.js Quickstart (App Router): https://clerk.com/docs/nextjs/getting-started/quickstart
+  - 2026-01-08: Next.js App Router migration verification (Tavily).
+    - Next.js App Router overview: https://nextjs.org/docs/app
+    - Next.js App Router routing/layouts: https://nextjs.org/docs/app/building-your-application/routing
+    - Next.js installation guidance: https://nextjs.org/docs/getting-started/installation
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -145,7 +151,7 @@ Progress (2026-01-07):
 - Frontend URL (prod): https://itscooked.vercel.app/
 - GitHub repo: https://github.com/Grey-Space-Consulting/itscooked
 - Repo resynced to GitHub; project files restored after remote overwrite.
-- Auth decision: OAuth 2.1 Authorization Code + PKCE (public client) with self-hosted OIDC on the existing backend. Refresh token rotation for public clients per RFC 9700.
+- Auth decision (updated 2026-01-08): Use Clerk-managed auth for the web client (Next.js App Router). Backend should validate Clerk session JWTs; previous self-hosted OIDC plan is superseded for the web client.
 - Backend base URL (prod): https://itscooked.vercel.app/ (same origin as frontend; API paths use `/v1`).
 - Proposed backend API contract drafted below (v1). All endpoints are additive and must not break the existing backend.
 Blockers:
@@ -164,7 +170,11 @@ Compatibility matrix (iOS Safari/PWA, must re-verify each phase):
 
 Proposed backend API contract (v1, additive)
 Base URL: `https://itscooked.vercel.app` (prod)
-Auth/OIDC:
+Auth (Clerk):
+- Web client uses Clerk session tokens (via `getToken()`) and sends `Authorization: Bearer <token>` on API requests.
+- Backend validates Clerk JWTs via Clerk JWKS or server SDK.
+
+Legacy/optional (previous OIDC plan, only if still needed for other clients):
 - GET `/.well-known/openid-configuration` (OIDC discovery)
 - GET `/oauth/authorize` (authorization code + PKCE)
 - POST `/oauth/token` (code exchange + refresh)
@@ -261,15 +271,14 @@ Acceptance criteria:
 - Existing client behavior remains unchanged.
 Status: In progress
 Progress (2026-01-08):
-- Implemented OIDC Authorization Code + PKCE flow with discovery-based endpoints, refresh handling, and session storage tokens.
-- Added `/auth/callback` route for handling login redirects and post-login navigation.
-- Added API client helpers with auth headers plus read-only endpoints for recipes, grocery lists, and `/v1/me`.
-- Wired recipes list and detail views to backend data with offline/error callouts and last-sync updates.
-- Wired grocery list view to backend data using `VITE_DEFAULT_GROCERY_LIST_ID` or `?list=` parameter.
-- Added account session UI in Settings with sign-in/out controls and profile fetch.
-- Added env template + typings, plus recipe detail offline/error callouts and linted node script globals.
+- Completed migration from Vite + React Router to Next.js App Router in `/web` to support Clerk auth.
+- Added Clerk App Router setup (`src/proxy.ts`, `ClerkProvider`, SignedIn/SignedOut UI) and updated screens for Next.js routing.
+- Replaced custom OIDC auth usage with Clerk `useAuth()` + `getToken()` in the API client.
+- Updated build tooling for Next.js and refreshed PWA checks to validate `app/layout.tsx` and `providers.tsx`.
+- Lint, typecheck, and `npm run pwa:check` pass after migration.
 Pending:
-- Configure OIDC + API env values and verify live backend responses on device.
+- Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
+- Validate PWA install + offline behavior on real iOS Safari after migration.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
@@ -396,3 +405,6 @@ Status: Not started
 - 2026-01-07: Added `vercel.json` to build `/web` on Vercel and rewrite SPA routes to `index.html`.
 - 2026-01-08: Phase 2 started with OIDC auth scaffold, API client integration, recipes + grocery read-only data flows, and offline/error UI states.
 - 2026-01-08: Phase 2 expanded with env template, recipe detail offline callouts, and lint fixes for node script globals.
+- 2026-01-08: Clerk App Router quickstart + Next.js App Router docs verified; migration to Next.js underway for Clerk integration.
+- 2026-01-08: Auth decision updated to Clerk for the web client; self-hosted OIDC plan superseded for this app.
+- 2026-01-08: Phase 2 updated with completed Next.js App Router migration, Clerk wiring, and passing lint/typecheck/PWA checks.

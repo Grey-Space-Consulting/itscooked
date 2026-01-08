@@ -2,7 +2,10 @@
 
 web/node_modules/
 web/dist/
+web/.next/
+web/out/
 web/.env*
+*.tsbuildinfo
 
 npm-debug.log*
 yarn-debug.log*
