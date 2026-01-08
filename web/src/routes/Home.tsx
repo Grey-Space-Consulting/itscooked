@@ -30,11 +30,11 @@ export function Home() {
       <section className="hero">
         <h1 className="hero-title">Cook smarter, shop lighter.</h1>
         <p className="hero-subtitle">
-          Plan this week, keep pantry staples organized, and turn links into
-          polished recipes.
+          Plan this week, save favorite dishes, and turn links into polished
+          recipes.
         </p>
         <div className="hero-actions">
-          <Button>Start a grocery list</Button>
+          <Button>Browse recipes</Button>
           <Button variant="outline">Add recipe link</Button>
         </div>
       </section>

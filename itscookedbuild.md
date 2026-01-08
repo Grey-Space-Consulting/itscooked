@@ -4,7 +4,7 @@ Last updated: 2026-01-08
 Owner: AI coding agent (Codex)
 Status: Draft
 Current phase: Phase 2 (in progress)
-Next up: Verify backend integration with Clerk tokens and confirm live data flows
+Next up: Verify backend integration with Clerk tokens and confirm live recipe + profile data flows
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -16,8 +16,8 @@ Next up: Verify backend integration with Clerk tokens and confirm live data flow
 ## Scope summary
 - Build a new web client (PWA) that runs well on iOS Safari and can be installed to Home Screen.
 - Integrate with the existing backend. No breaking changes to current APIs.
-- Deliver the ingestion, recipe management, and smart grocery list features described in the PRD.
-- Maintain a reliable offline-first experience in grocery/cooking contexts.
+- Deliver the ingestion and recipe management features described in the PRD.
+- Maintain a reliable offline-first experience in cooking contexts.
 - Deliver a clean, modern, mobile-first UI across all core flows.
 
 ## Out of scope
@@ -205,12 +205,6 @@ Ingredients:
 - GET `/v1/ingredients/search` (query)
 - GET `/v1/ingredients/:id`
 
-Grocery lists:
-- POST `/v1/grocery-lists/preview` (body: recipe_ids, options)
-- POST `/v1/grocery-lists` (persist a list)
-- GET `/v1/grocery-lists/:id`
-- PATCH `/v1/grocery-lists/:id`
-
 Meal planning (optional MVP):
 - GET `/v1/meal-plans`
 - POST `/v1/meal-plans`
@@ -245,7 +239,7 @@ Acceptance criteria:
 Status: In progress
 Progress (2026-01-07):
 - Web client scaffolded under `/web` with Vite + React + TypeScript and React Router.
-- Routing, app shell, and placeholder views added for Home, Recipes, Grocery, and Settings.
+- Routing, app shell, and placeholder views added for Home, Recipes, and Settings.
 - UI system tokens and base components (buttons, inputs, cards, lists) implemented with responsive layout primitives.
 - API client skeleton and state provider stubs added for future backend integration.
 - PWA manifest, icons, and service worker registration scaffolded.
@@ -262,7 +256,7 @@ Progress (2026-01-07):
 Goal: Connect to the existing backend safely.
 Tasks:
 - Implement API client and auth/session handling to match backend.
-- Implement read-only data flows for recipes and lists.
+- Implement read-only data flows for recipes and user profile.
 - Add API error handling and offline-aware UI states.
 Deliverables:
 - Logged-in user can fetch recipe index and view details.
@@ -285,9 +279,9 @@ Progress (2026-01-08):
 - Added a prebuild guard to delete any stray `src/middleware.*` files before Next.js runs (proxy-only requirement).
 - Expanded the prebuild guard to remove any root or nested `src/src/middleware.*` entries if present.
 - Made `useOnlineStatus` SSR-safe to prevent pre-render crashes.
-- Wrapped the Grocery page in a Suspense boundary to satisfy `useSearchParams` requirements during prerender.
+- Removed grocery routes and UI; grocery feature removed from scope.
 Pending:
-- Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
+- Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
 - Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
 - Keep `.env.local` untracked and located at `/web` (never under `src`).
@@ -320,21 +314,7 @@ Acceptance criteria:
 - Cooking mode is legible, touch-friendly, and consistent with the UI system.
 Status: Not started
 
-### Phase 5: Smart grocery list
-Goal: Provide merged grocery lists with unit conversion.
-Tasks:
-- Implement list generation and merging rules.
-- Add unit conversion and fuzzy match threshold controls.
-- Add “pantry” grouping for staple items.
-- Build a clean, scannable grocery list UI with aisle grouping and quick check-offs.
-Deliverables:
-- Usable shopping list view with merged items.
-Acceptance criteria:
-- Duplicate ingredients merge correctly within defined thresholds.
-- List UI remains readable and usable on small iPhone screens.
-Status: Not started
-
-### Phase 6: Offline-first and PWA polish
+### Phase 5: Offline-first and PWA polish
 Goal: Reliable offline usage and iOS install experience.
 Tasks:
 - Implement caching strategy (app shell + essential data).
@@ -343,10 +323,10 @@ Tasks:
 Deliverables:
 - App usable in low-connectivity environments.
 Acceptance criteria:
-- Works offline for recently viewed recipes and grocery lists.
+- Works offline for recently viewed recipes.
 Status: Not started
 
-### Phase 7: Performance, accessibility, and QA
+### Phase 6: Performance, accessibility, and QA
 Goal: Ensure production quality.
 Tasks:
 - Run performance profiling and fix critical bottlenecks.
@@ -360,7 +340,7 @@ Acceptance criteria:
 - Visual QA checklist passes on iOS Safari and installed PWA.
 Status: Not started
 
-### Phase 8: Release readiness
+### Phase 7: Release readiness
 Goal: Documentation, user onboarding, and monitoring.
 Tasks:
 - Create user onboarding flows (install, share, shortcuts).
@@ -372,7 +352,7 @@ Acceptance criteria:
 - Onboarding verified on real iOS device.
 Status: Not started
 
-### Phase 9: Automated Vercel deployment (final phase)
+### Phase 8: Automated Vercel deployment (final phase)
 Goal: One-script deploy that is safe and does not affect existing client/backend.
 Tasks:
 - Choose Vercel deployment target (static or SSR) based on Phase 0 architecture.
@@ -416,7 +396,7 @@ Status: Not started
 - 2026-01-07: Phase 1 updated to note Lighthouse PWA category deprecation and DevTools PWA checklist fallback.
 - 2026-01-07: Phase 1 added static PWA validation script; checks pass locally.
 - 2026-01-07: Added `vercel.json` to build `/web` on Vercel and rewrite SPA routes to `index.html`.
-- 2026-01-08: Phase 2 started with OIDC auth scaffold, API client integration, recipes + grocery read-only data flows, and offline/error UI states.
+- 2026-01-08: Phase 2 started with OIDC auth scaffold, API client integration, recipes read-only data flows, and offline/error UI states.
 - 2026-01-08: Phase 2 expanded with env template, recipe detail offline callouts, and lint fixes for node script globals.
 - 2026-01-08: Clerk App Router quickstart + Next.js App Router docs verified; migration to Next.js underway for Clerk integration.
 - 2026-01-08: Auth decision updated to Clerk for the web client; self-hosted OIDC plan superseded for this app.
@@ -430,4 +410,4 @@ Status: Not started
 - 2026-01-08: Added prebuild cleanup to remove legacy middleware files that conflict with `src/proxy.ts`.
 - 2026-01-08: Expanded middleware cleanup to cover nested `src/src` paths seen in CI error logs.
 - 2026-01-08: Guarded `useOnlineStatus` against `navigator` access during SSR.
-- 2026-01-08: Added Suspense boundary for `/grocery` to fix `useSearchParams` prerender error.
+- 2026-01-08: Removed grocery feature (routes, UI, API contract, and plan scope) to unblock builds and refocus Phase 2.

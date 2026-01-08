@@ -8,7 +8,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ItsCooked",
-  description: "ItsCooked PWA for recipes, cooking, and smart grocery lists.",
+  description: "ItsCooked PWA for recipes and cooking.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/icon-192.png",

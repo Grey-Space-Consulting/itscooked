@@ -49,27 +49,3 @@ export type RecipeDetail = {
   ingredients?: RecipeIngredient[];
   steps?: RecipeStep[];
 };
-
-export type GroceryListSummary = {
-  id: string;
-  title: string;
-  itemCount: number;
-  updatedAt: string;
-};
-
-export type GroceryListItem = {
-  id?: string;
-  name: string;
-  quantity?: string;
-  unit?: string;
-  notes?: string;
-  aisle?: string;
-  checked?: boolean;
-};
-
-export type GroceryList = {
-  id: string;
-  title: string;
-  updatedAt: string;
-  items: GroceryListItem[];
-};

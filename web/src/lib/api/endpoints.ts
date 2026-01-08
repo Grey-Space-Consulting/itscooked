@@ -1,9 +1,4 @@
-import type {
-  GroceryList,
-  RecipeDetail,
-  RecipeSummary,
-  UserProfile
-} from "./types";
+import type { RecipeDetail, RecipeSummary, UserProfile } from "./types";
 import type { ApiClient } from "./client";
 
 const extractList = <T>(value: unknown): T[] => {
@@ -34,15 +29,6 @@ export async function fetchRecipe(
   recipeId: string
 ): Promise<RecipeDetail> {
   return api.get<RecipeDetail>(`/v1/recipes/${encodeURIComponent(recipeId)}`);
-}
-
-export async function fetchGroceryList(
-  api: ApiClient,
-  listId: string
-): Promise<GroceryList> {
-  return api.get<GroceryList>(
-    `/v1/grocery-lists/${encodeURIComponent(listId)}`
-  );
 }
 
 export async function fetchMe(api: ApiClient): Promise<UserProfile> {

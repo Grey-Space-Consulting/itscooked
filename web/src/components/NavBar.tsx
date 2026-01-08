@@ -7,7 +7,6 @@ import { cx } from "../lib/utils";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/recipes", label: "Recipes" },
-  { to: "/grocery", label: "Grocery" },
   { to: "/settings", label: "Settings" }
 ];
 
