@@ -4,7 +4,7 @@ Last updated: 2026-01-07
 Owner: AI coding agent (Codex)
 Status: Draft
 Current phase: Phase 0 (in progress)
-Next up: Complete Phase 0 (confirm backend base URL, finalize frontend stack)
+Next up: Complete Phase 0 (finalize frontend stack and UI system)
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -18,6 +18,7 @@ Next up: Complete Phase 0 (confirm backend base URL, finalize frontend stack)
 - Integrate with the existing backend. No breaking changes to current APIs.
 - Deliver the ingestion, recipe management, and smart grocery list features described in the PRD.
 - Maintain a reliable offline-first experience in grocery/cooking contexts.
+- Deliver a clean, modern, mobile-first UI across all core flows.
 
 ## iOS PWA standards and constraints (verify via Tavily each phase)
 The following items MUST be validated with Tavily before implementation because iOS PWA support changes over time:
@@ -48,15 +49,29 @@ Record results here each time they are checked:
     - caniuse data: Background Sync API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/background-sync.json
     - OAuth 2.0 Security BCP (RFC 9700): https://www.rfc-editor.org/rfc/rfc9700
     - OAuth 2.1 draft (latest): https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1
+  - 2026-01-07: Phase 0 re-verification (Tavily; sources updated).
+    - WebKit (Web Push + Home Screen web app requirements): https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/
+    - WebKit (Safari 16.4 features for web apps): https://webkit.org/blog/13966/webkit-features-in-safari-16-4/
+    - MDN Web app manifest overview: https://developer.mozilla.org/en-US/docs/Web/Manifest
+    - MDN share_target (Web Share Target): https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target
+    - MDN Service Worker API: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
+    - Safari PWA cache behavior notes: https://iinteractive.com/resources/blog/taming-pwa-cache-behavior
+    - MDN Storage quotas and eviction criteria: https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria
+    - caniuse data: Web App Manifest (A2HS) https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/web-app-manifest.json
+    - caniuse data: Service Workers https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/serviceworkers.json
+    - caniuse data: Web Share API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/web-share.json
+    - caniuse data: Background Sync API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/background-sync.json
+    - caniuse data: Screen Wake Lock API https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/wake-lock.json
+    - Periodic Background Sync API overview: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/how-to/background-syncs
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
-- Web App Manifest: `name`, `short_name`, `start_url`, `display: standalone`, `theme_color`, `background_color`, `icons` (192/512 + maskable). Add iOS-specific metadata (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`). Verify current requirements before implementation.
-- Service worker: use Cache API for app shell + critical data, and implement explicit update prompts to avoid stale caches in Safari.
-- Web Push: historically supported on iOS 16.4+ only for installed PWAs; permission must be requested from within the PWA. Re-verify current Safari behavior.
-- Web Share: `navigator.share()` is limited-availability; Web Share Target (`share_target`) is experimental and not Baseline per MDN. Treat iOS support as uncertain until verified; provide iOS Shortcut fallback if unsupported.
-- Background Sync / Periodic Background Sync: likely Chromium-first; treat as unsupported on iOS unless verified. Use foreground sync + retry queues.
-- Storage quotas: iOS Safari may enforce low storage limits; handle `QuotaExceededError` and provide cleanup paths.
-- Wake Lock: support is uncertain on iOS; provide a fallback keep-awake strategy for cooking mode.
+- Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
+- Service worker: supported on iOS Safari. Use versioned caches + explicit update prompts; Safari caching can be aggressive, so avoid SW caching API responses unless explicitly needed.
+- Web Push: supported on iOS/iPadOS 16.4+ for Home Screen web apps only; permission must be requested from a user gesture inside the PWA.
+- Web Share: `navigator.share()` supported on iOS Safari 12.2+ per caniuse. Web Share Target (`share_target`) is experimental/not Baseline per MDN; treat as unsupported and provide an iOS Shortcut fallback.
+- Background Sync / Periodic Background Sync: not supported on iOS Safari per caniuse; use foreground sync + retry queues.
+- Storage quotas: Safari enforces quotas and can proactively evict data (including after periods of no user interaction). Handle `QuotaExceededError` and provide cleanup flows; consider `navigator.storage.persist()`.
+- Wake Lock: supported on iOS Safari 16.4+ per caniuse, but PWA-mode bugs are noted; implement a fallback keep-awake strategy for cooking mode.
 
 ## Architecture guardrails
 - Prefer standards-based web APIs with progressive enhancement.
@@ -64,6 +79,7 @@ Record results here each time they are checked:
 - Favor stable, well-maintained libraries with clear release cadence.
 - Use HTTPS everywhere; enforce security headers (CSP, HSTS, Referrer-Policy, Permissions-Policy).
 - Ensure the web client can be deployed independently from the existing client (separate domain or subdomain, separate build pipeline).
+- Establish a small, consistent design system (typography, color, spacing, components) and apply it throughout.
 
 ## Phase plan (execute in order, one phase at a time)
 
@@ -87,28 +103,32 @@ Acceptance criteria:
 - Backend integration points are documented.
 Status: In progress
 Progress (2026-01-07):
-- Repo appears to be an iOS SwiftUI template project; no backend endpoints or auth flows found.
-- No existing API/base URL configuration detected in the repo.
-- Tavily sources added for Web Share, Wake Lock, and Background Sync; compatibility matrix drafted below.
+- Repo audit confirms only SwiftUI template files (ContentView/Item/itscookedApp) and local SwiftData storage; no backend endpoints, auth flows, or API base URL config detected.
+- Phase 0 Tavily re-verification completed; sources refreshed for manifest/A2HS, service workers/caching, web push, share, background sync, wake lock, and storage quotas.
+- Architecture decision: new web client will live in a separate top-level web app directory and deploy independently from the existing SwiftUI app; framework selection deferred pending Tavily checks.
 - Hosting decision: Vercel (prod). Custom domain TBD; use Vercel-provided URL until domain is set.
 - Frontend URL (prod): https://itscooked.vercel.app/
 - GitHub repo: https://github.com/Grey-Space-Consulting/itscooked
 - Repo resynced to GitHub; project files restored after remote overwrite.
 - Auth decision: OAuth 2.1 Authorization Code + PKCE (public client) with self-hosted OIDC on the existing backend. Refresh token rotation for public clients per RFC 9700.
+- Backend base URL (prod): https://itscooked.vercel.app/ (same origin as frontend; API paths use `/v1`).
 - Proposed backend API contract drafted below (v1). All endpoints are additive and must not break the existing backend.
 Blockers:
-- Need backend base URL and confirmation of auth implementation constraints.
+- Need confirmation of auth implementation constraints (OIDC endpoints, token lifetimes, user store).
 
 Compatibility matrix (iOS Safari/PWA, must re-verify each phase):
+- Web App Manifest / A2HS: Partial support in iOS Safari; Add to Home Screen required and `display: standalone` or `fullscreen` is needed for Home Screen web app behavior. Sources: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/web-app-manifest.json, https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/, https://developer.mozilla.org/en-US/docs/Web/Manifest
+- Service Workers: Supported on iOS Safari; caching can be aggressive, so plan explicit update prompts and avoid SW-caching API responses unless needed. Sources: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/serviceworkers.json, https://iinteractive.com/resources/blog/taming-pwa-cache-behavior, https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
+- Web Push: Supported on iOS/iPadOS 16.4+ only for Home Screen web apps; permission must be user-initiated. Sources: https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/, https://webkit.org/blog/13966/webkit-features-in-safari-16-4/
 - Web Share API (`navigator.share`): Supported on iOS Safari 12.2+ per caniuse data. Source: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/web-share.json
-- Web Share Target (`share_target`): Experimental and not Baseline per MDN; iOS support unclear, treat as unsupported until verified. Source: https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target
-- Screen Wake Lock API: Supported on iOS Safari 16.4+ per caniuse data. Note caniuse bug indicates potential PWA-mode issues on iOS; verify on device. Source: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/wake-lock.json
+- Web Share Target (`share_target`): Experimental and not Baseline per MDN; treat as unsupported on iOS until verified on device. Source: https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target
+- Screen Wake Lock API: Supported on iOS Safari 16.4+ per caniuse data; caniuse notes a PWA-mode bug on iOS. Source: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/wake-lock.json
 - Background Sync API: Not supported on iOS Safari per caniuse data. Source: https://raw.githubusercontent.com/Fyrd/caniuse/main/features-json/background-sync.json
-- Periodic Background Sync: No separate caniuse feature file; treat as unsupported on iOS Safari until verified. Source for API details: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/how-to/background-syncs
-- Web Push: Supported on iOS 16.4+ only for installed PWAs; must request permission within PWA. Sources: https://academy.insiderone.com/docs/web-push-support-for-mobile-safari, https://isala.me/blog/web-push-notifications-without-firebase/
+- Periodic Background Sync: Treat as unsupported on iOS Safari; API details only. Source: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/how-to/background-syncs
+- Storage quotas/eviction: Safari enforces quotas and can proactively evict inactive origins; handle `QuotaExceededError` and consider `navigator.storage.persist()`. Source: https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria
 
 Proposed backend API contract (v1, additive)
-Base URL: `https://<backend-host>` (prod, TBD)
+Base URL: `https://itscooked.vercel.app` (prod)
 Auth/OIDC:
 - GET `/.well-known/openid-configuration` (OIDC discovery)
 - GET `/oauth/authorize` (authorization code + PKCE)
@@ -168,12 +188,15 @@ Tasks:
 - Set up routing, state management, and API client structure.
 - Configure linting, formatting, type checks, and CI checks.
 - Implement Web App Manifest, icons, and PWA install metadata per latest standards.
+- Define the UI system (typography, color, spacing, components) and build core layout primitives.
 Deliverables:
 - Running web app shell with navigation and empty views.
 - PWA manifest + service worker registration scaffold (no caching yet).
+- UI system tokens and base components (buttons, inputs, cards, lists).
 Acceptance criteria:
 - App builds and runs locally on iOS Safari.
 - Lighthouse PWA checks pass for baseline requirements.
+- Core screens render with the defined UI system and responsive layout.
 Status: Not started
 
 ### Phase 2: Backend integration and auth
@@ -208,10 +231,12 @@ Tasks:
 - Build recipe detail view with ingredients and steps.
 - Implement edit flow with validation and autosave.
 - Add cooking mode with step-by-step UI and wake-lock fallback.
+- Apply the UI system to recipe detail, edit, and cooking flows with modern, mobile-first layouts.
 Deliverables:
 - Full recipe detail experience including edits.
 Acceptance criteria:
 - Edits persist reliably and reflect backend state.
+- Cooking mode is legible, touch-friendly, and consistent with the UI system.
 Status: Not started
 
 ### Phase 5: Smart grocery list
@@ -220,10 +245,12 @@ Tasks:
 - Implement list generation and merging rules.
 - Add unit conversion and fuzzy match threshold controls.
 - Add “pantry” grouping for staple items.
+- Build a clean, scannable grocery list UI with aisle grouping and quick check-offs.
 Deliverables:
 - Usable shopping list view with merged items.
 Acceptance criteria:
 - Duplicate ingredients merge correctly within defined thresholds.
+- List UI remains readable and usable on small iPhone screens.
 Status: Not started
 
 ### Phase 6: Offline-first and PWA polish
@@ -244,10 +271,12 @@ Tasks:
 - Run performance profiling and fix critical bottlenecks.
 - Accessibility audit (WCAG 2.2 AA targets).
 - Add e2e smoke tests and critical path integration tests.
+- UI polish pass (spacing, typography hierarchy, component consistency).
 Deliverables:
 - QA report and test coverage summary.
 Acceptance criteria:
 - Meets performance budgets and accessibility criteria.
+- Visual QA checklist passes on iOS Safari and installed PWA.
 Status: Not started
 
 ### Phase 8: Release readiness
@@ -280,6 +309,7 @@ Status: Not started
 - Keep this document updated after every material change.
 - Validate on real iOS Safari and an installed PWA.
 - Ensure backend contracts remain backward compatible.
+- Maintain a clean, modern UI consistent with the design system.
 
 ## Known risks and mitigations
 - iOS PWA feature gaps (Share Target, Background Sync, Wake Lock): mitigate with fallbacks (Shortcuts, manual refresh, keep-awake alternatives).
@@ -294,3 +324,5 @@ Status: Not started
 - 2026-01-07: Frontend production URL set to https://itscooked.vercel.app/.
 - 2026-01-07: GitHub repo set to https://github.com/Grey-Space-Consulting/itscooked.
 - 2026-01-07: Repo resynced to GitHub; restored missing project files.
+- 2026-01-07: Backend base URL set and UI requirements added across phases.
+- 2026-01-07: Phase 0 re-verification completed; standards snapshot, compatibility matrix, and repo audit notes updated with fresh sources.
