@@ -1,26 +1,143 @@
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { Callout } from "../components/ui/Callout";
 import { List } from "../components/ui/List";
 import { Section } from "../components/ui/Section";
-
-const produce = [
-  { title: "Limes", subtitle: "2", trailing: <span className="badge">Produce</span> },
-  { title: "Ginger", subtitle: "1 knob", trailing: <span className="badge">Produce</span> }
-];
-
-const pantry = [
-  { title: "Coconut milk", subtitle: "2 cans", trailing: <span className="badge">Pantry</span> },
-  { title: "Jasmine rice", subtitle: "1 bag", trailing: <span className="badge">Pantry</span> }
-];
+import { useAuth } from "../lib/auth";
+import { fetchGroceryList } from "../lib/api/endpoints";
+import { useApiClient } from "../lib/api/useApiClient";
+import type { GroceryList, GroceryListItem } from "../lib/api/types";
+import { useOnlineStatus } from "../lib/hooks/useOnlineStatus";
+import { useAppDispatch } from "../lib/state/AppState";
+import { formatShortTime, groupBy } from "../lib/utils";
 
 export function Grocery() {
+  const [searchParams] = useSearchParams();
+  const { status, login, config } = useAuth();
+  const api = useApiClient();
+  const isOnline = useOnlineStatus();
+  const dispatch = useAppDispatch();
+  const [list, setList] = useState<GroceryList | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setList(null);
+      setError(null);
+      setIsLoading(false);
+    }
+  }, [status]);
+
+  const listId =
+    searchParams.get("list") ??
+    import.meta.env.VITE_DEFAULT_GROCERY_LIST_ID ??
+    "";
+
+  useEffect(() => {
+    if (status !== "authenticated" || !listId || !isOnline) {
+      return;
+    }
+
+    let isActive = true;
+
+    const load = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const result = await fetchGroceryList(api, listId);
+        if (!isActive) {
+          return;
+        }
+        setList(result);
+        dispatch({
+          type: "setLastSync",
+          value: formatShortTime(new Date())
+        });
+      } catch (err) {
+        if (!isActive) {
+          return;
+        }
+        const message = err instanceof Error ? err.message : "Unable to load list.";
+        setError(message);
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      isActive = false;
+    };
+  }, [api, dispatch, isOnline, listId, status]);
+
+  const groupedItems = useMemo(() => {
+    if (!list?.items?.length) {
+      return [] as Array<[string, GroceryListItem[]]>;
+    }
+
+    return Object.entries(
+      groupBy(list.items, (item) => item.aisle ?? "Unsorted")
+    ).sort(([a], [b]) => a.localeCompare(b));
+  }, [list]);
+
+  const showAuthPrompt =
+    status === "unauthenticated" || status === "disabled" || status === "error";
+  const authDescription = config
+    ? "Sign in to sync grocery lists from the backend."
+    : "Auth is not configured yet. Add OIDC env values to enable sign-in.";
+
   return (
     <div className="page stack">
-      <Section
-        title="Grocery list"
-        subtitle="Merged from your next three recipes"
-      >
-        <Card title="Trip ready" meta="12 items across 4 aisles">
+      <Section title="Grocery list" subtitle="Merged from your next three recipes">
+        {showAuthPrompt && (
+          <Callout
+            title="Connect to ItsCooked"
+            description={authDescription}
+            variant={config ? "info" : "warning"}
+            action={
+              config ? <Button onClick={login}>Sign in</Button> : undefined
+            }
+          />
+        )}
+
+        {!listId && status === "authenticated" && (
+          <Callout
+            title="Choose a list to view"
+            description="Set VITE_DEFAULT_GROCERY_LIST_ID or pass ?list= in the URL."
+            variant="warning"
+          />
+        )}
+
+        {!isOnline && (
+          <Callout
+            title="You're offline"
+            description="Reconnect to refresh grocery list data."
+            variant="warning"
+          />
+        )}
+
+        {error && (
+          <Callout
+            title="List sync failed"
+            description={error}
+            variant="error"
+          />
+        )}
+
+        <Card
+          title={list?.title ?? "Trip ready"}
+          meta={
+            list?.items
+              ? `${list.items.length} items across ${groupedItems.length} aisles`
+              : "Waiting for grocery data"
+          }
+        >
           <div className="hero-actions">
             <Button>Start shopping mode</Button>
             <Button variant="ghost">Share list</Button>
@@ -28,13 +145,44 @@ export function Grocery() {
         </Card>
       </Section>
 
-      <Section title="Produce" subtitle="Fresh picks first">
-        <List items={produce} />
-      </Section>
+      {isLoading && (
+        <Section title="Loading" subtitle="Fetching the latest list">
+          <Card>
+            <p className="card-meta">Syncing your grocery items...</p>
+          </Card>
+        </Section>
+      )}
 
-      <Section title="Pantry" subtitle="Staples and shelf-safe items">
-        <List items={pantry} />
-      </Section>
+      {!isLoading && groupedItems.length === 0 && (
+        <Section title="No items yet" subtitle="Once items sync, they will appear here">
+          <Card>
+            <p className="card-meta">
+              Add recipes to generate a list and keep pantry staples organized.
+            </p>
+          </Card>
+        </Section>
+      )}
+
+      {groupedItems.map(([aisle, items]) => (
+        <Section key={aisle} title={aisle} subtitle="Tap to mark items done">
+          <List
+            items={items.map((item) => {
+              const quantity = [item.quantity, item.unit]
+                .filter(Boolean)
+                .join(" ");
+              const subtitle = [quantity, item.notes].filter(Boolean).join(" ");
+
+              return {
+                title: item.name,
+                subtitle: subtitle || undefined,
+                trailing: item.checked ? (
+                  <span className="badge is-warm">Checked</span>
+                ) : undefined
+              };
+            })}
+          />
+        </Section>
+      ))}
     </div>
   );
 }

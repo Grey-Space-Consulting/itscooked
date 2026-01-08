@@ -19,13 +19,19 @@ const defaultConfig: ApiConfig = {
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
-  config: ApiConfig = defaultConfig
+  config: ApiConfig = defaultConfig,
+  accessToken?: string | null
 ): Promise<T> {
+  const headers = new Headers(options.headers);
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
+  }
+  if (options.body !== undefined && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(`${config.baseUrl}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers ?? {})
-    },
+    headers,
     ...options
   });
 
@@ -49,4 +55,46 @@ export async function apiRequest<T>(
   }
 
   return (await response.json()) as T;
+}
+
+export type ApiClient = {
+  request: <T>(path: string, options?: RequestInit) => Promise<T>;
+  get: <T>(path: string, options?: RequestInit) => Promise<T>;
+  post: <T>(path: string, body?: unknown, options?: RequestInit) => Promise<T>;
+};
+
+type ApiClientOptions = {
+  config?: ApiConfig;
+  getAccessToken?: () => Promise<string | null> | string | null;
+  onUnauthorized?: () => void;
+};
+
+export function createApiClient(options: ApiClientOptions = {}): ApiClient {
+  const config = options.config ?? defaultConfig;
+
+  const request = async <T>(path: string, init: RequestInit = {}) => {
+    const accessToken = options.getAccessToken
+      ? await options.getAccessToken()
+      : null;
+
+    try {
+      return await apiRequest<T>(path, init, config, accessToken);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        options.onUnauthorized?.();
+      }
+      throw error;
+    }
+  };
+
+  return {
+    request,
+    get: (path, init) => request(path, { ...init, method: "GET" }),
+    post: (path, body, init) =>
+      request(path, {
+        ...init,
+        method: "POST",
+        body: body === undefined ? undefined : JSON.stringify(body)
+      })
+  };
 }

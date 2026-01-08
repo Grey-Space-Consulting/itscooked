@@ -1,10 +1,10 @@
 # ItsCooked Web Client Build Plan (PWA for iOS)
 
-Last updated: 2026-01-07
+Last updated: 2026-01-08
 Owner: AI coding agent (Codex)
 Status: Draft
-Current phase: Phase 1 (in progress)
-Next up: Complete Phase 1 (app foundation and scaffolding)
+Current phase: Phase 2 (in progress)
+Next up: Complete Phase 2 (backend integration and auth)
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -92,6 +92,12 @@ Record results here each time they are checked:
     - Monorepos (root directory selection): https://vercel.com/docs/monorepos
     - Configuring a Build (root directory, build/output/install commands): https://vercel.com/docs/builds/configure-a-build
     - Project configuration rewrites (vercel.ts examples): https://vercel.com/docs/project-configuration/vercel-ts
+  - 2026-01-08: Phase 2 auth/browser OAuth verification (Tavily).
+    - OAuth 2.0 Security BCP (RFC 9700): https://www.rfc-editor.org/rfc/rfc9700
+    - OAuth 2.1 draft (current): https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1
+    - OAuth 2.0 for Browser-Based Apps (current draft): https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps
+    - PKCE (RFC 7636): https://www.rfc-editor.org/rfc/rfc7636
+    - OpenID Connect Discovery 1.0: https://openid.net/specs/openid-connect-discovery-1_0.html
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -253,7 +259,15 @@ Deliverables:
 Acceptance criteria:
 - No backend contract changes required.
 - Existing client behavior remains unchanged.
-Status: Not started
+Status: In progress
+Progress (2026-01-08):
+- Implemented OIDC Authorization Code + PKCE flow with discovery-based endpoints, refresh handling, and session storage tokens.
+- Added `/auth/callback` route for handling login redirects and post-login navigation.
+- Added API client helpers with auth headers plus read-only endpoints for recipes, grocery lists, and `/v1/me`.
+- Wired recipes list and detail views to backend data with offline/error callouts and last-sync updates.
+- Wired grocery list view to backend data using `VITE_DEFAULT_GROCERY_LIST_ID` or `?list=` parameter.
+- Added account session UI in Settings with sign-in/out controls and profile fetch.
+- Added env template + typings, plus recipe detail offline/error callouts and linted node script globals.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
@@ -378,3 +392,5 @@ Status: Not started
 - 2026-01-07: Phase 1 updated to note Lighthouse PWA category deprecation and DevTools PWA checklist fallback.
 - 2026-01-07: Phase 1 added static PWA validation script; checks pass locally.
 - 2026-01-07: Added `vercel.json` to build `/web` on Vercel and rewrite SPA routes to `index.html`.
+- 2026-01-08: Phase 2 started with OIDC auth scaffold, API client integration, recipes + grocery read-only data flows, and offline/error UI states.
+- 2026-01-08: Phase 2 expanded with env template, recipe detail offline callouts, and lint fixes for node script globals.
