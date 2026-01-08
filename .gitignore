@@ -5,6 +5,7 @@ web/dist/
 web/.next/
 web/out/
 web/.env*
+web/src/.env*
 *.tsbuildinfo
 
 npm-debug.log*
