@@ -283,6 +283,7 @@ Progress (2026-01-08):
 - Added `.gitignore` guard for `web/src/.env*` and clarified env file placement.
 - Removed tracked `web/src/env.local` and expanded `.gitignore` to prevent future commits.
 - Added a prebuild guard to delete any stray `src/middleware.*` files before Next.js runs (proxy-only requirement).
+- Expanded the prebuild guard to remove any root or nested `src/src/middleware.*` entries if present.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
@@ -425,3 +426,4 @@ Status: Not started
 - 2026-01-08: Guarded against committing env files under `web/src` and clarified `.env.local` placement.
 - 2026-01-08: Removed tracked `web/src/env.local` and tightened env file guardrails.
 - 2026-01-08: Added prebuild cleanup to remove legacy middleware files that conflict with `src/proxy.ts`.
+- 2026-01-08: Expanded middleware cleanup to cover nested `src/src` paths seen in CI error logs.

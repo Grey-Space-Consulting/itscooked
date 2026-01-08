@@ -2,10 +2,18 @@ import { access, rm } from "node:fs/promises";
 import { constants } from "node:fs";
 
 const middlewareCandidates = [
+  "middleware.ts",
+  "middleware.js",
+  "middleware.mjs",
+  "middleware.cjs",
   "src/middleware.ts",
   "src/middleware.js",
   "src/middleware.mjs",
-  "src/middleware.cjs"
+  "src/middleware.cjs",
+  "src/src/middleware.ts",
+  "src/src/middleware.js",
+  "src/src/middleware.mjs",
+  "src/src/middleware.cjs"
 ];
 
 const removed = [];
