@@ -281,11 +281,13 @@ Progress (2026-01-08):
 - Next.js build updated `tsconfig.json` and `next-env.d.ts` to align with recommended settings.
 - Moved `themeColor` into the `viewport` export to satisfy Next.js App Router metadata requirements.
 - Added `.gitignore` guard for `web/src/.env*` and clarified env file placement.
+- Removed tracked `web/src/env.local` and expanded `.gitignore` to prevent future commits.
 Pending:
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes, grocery list, and profile.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
 - Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
 - Keep `.env.local` untracked and located at `/web` (never under `src`).
+- Rotate Clerk keys after accidental commit and ensure env files are untracked.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
@@ -420,3 +422,4 @@ Status: Not started
 - 2026-01-08: Next.js build normalized tsconfig + next-env TypeScript settings.
 - 2026-01-08: Theme color moved from metadata to viewport to remove Next.js warnings.
 - 2026-01-08: Guarded against committing env files under `web/src` and clarified `.env.local` placement.
+- 2026-01-08: Removed tracked `web/src/env.local` and tightened env file guardrails.

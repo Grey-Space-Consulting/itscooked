@@ -6,6 +6,7 @@ web/.next/
 web/out/
 web/.env*
 web/src/.env*
+web/src/env.local
 *.tsbuildinfo
 
 npm-debug.log*
