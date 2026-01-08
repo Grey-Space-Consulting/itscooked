@@ -1,11 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton
+  ClerkProvider
 } from "@clerk/nextjs";
 import { AppShell } from "../components/AppShell";
 import { Providers } from "./providers";
@@ -46,19 +41,7 @@ export default function RootLayout({
       <html lang="en">
         <body>
           <Providers>
-            <AppShell
-              authSlot={
-                <>
-                  <SignedOut>
-                    <SignInButton />
-                    <SignUpButton />
-                  </SignedOut>
-                  <SignedIn>
-                    <UserButton />
-                  </SignedIn>
-                </>
-              }
-            >
+            <AppShell>
               {children}
             </AppShell>
           </Providers>

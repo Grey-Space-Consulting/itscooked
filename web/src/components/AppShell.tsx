@@ -1,16 +1,22 @@
 "use client";
 
 import type { ReactNode } from "react";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from "@clerk/nextjs";
 import { useOnlineStatus } from "../lib/hooks/useOnlineStatus";
 import { useAppState } from "../lib/state/AppState";
 import { NavBar } from "./NavBar";
 
 type AppShellProps = {
   children: ReactNode;
-  authSlot?: ReactNode;
 };
 
-export function AppShell({ children, authSlot }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const isOnline = useOnlineStatus();
   const { activeKitchen, lastSyncAt } = useAppState();
 
@@ -32,7 +38,15 @@ export function AppShell({ children, authSlot }: AppShellProps) {
                 {lastSyncAt ? `Last sync ${lastSyncAt}` : "Not synced"}
               </span>
             </div>
-            {authSlot && <div className="auth-actions">{authSlot}</div>}
+            <div className="auth-actions">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
           </div>
         </div>
       </header>
