@@ -10,6 +10,7 @@
     "preview": "vite preview --host",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pwa:check": "node scripts/pwa-check.mjs",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },

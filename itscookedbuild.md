@@ -234,6 +234,7 @@ Progress (2026-01-07):
 - npm install completed; lint, typecheck, and production build pass locally.
 - Added `npm run dev:host` script to simplify device validation.
 - Lighthouse CLI v13 removed PWA category (per Lighthouse deprecation notes); use Chrome DevTools PWA checklist + manual offline/start_url verification instead.
+- Added `npm run pwa:check` static validation script; checks pass locally.
 - Pending: iOS Safari validation (home screen install + navigation) and DevTools PWA checklist/offline verification.
 
 ### Phase 2: Backend integration and auth
@@ -370,3 +371,4 @@ Status: Not started
 - 2026-01-07: Phase 1 updated with device validation script and pending iOS/Lighthouse checklist.
 - 2026-01-07: Phase 1 added minimal app-shell caching in the service worker for installability baseline (no API caching).
 - 2026-01-07: Phase 1 updated to note Lighthouse PWA category deprecation and DevTools PWA checklist fallback.
+- 2026-01-07: Phase 1 added static PWA validation script; checks pass locally.
