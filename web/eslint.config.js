@@ -12,7 +12,12 @@ export default [
     files: ["public/sw.js"],
     languageOptions: {
       globals: {
-        self: "readonly"
+        self: "readonly",
+        caches: "readonly",
+        fetch: "readonly",
+        Request: "readonly",
+        Response: "readonly",
+        URL: "readonly"
       }
     }
   },

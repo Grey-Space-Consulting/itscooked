@@ -224,9 +224,11 @@ Progress (2026-01-07):
 - UI system tokens and base components (buttons, inputs, cards, lists) implemented with responsive layout primitives.
 - API client skeleton and state provider stubs added for future backend integration.
 - PWA manifest, icons, and service worker registration scaffolded.
+- Added minimal app-shell caching for installability/offline baseline (no API caching).
 - Linting, formatting, type checks, and CI workflow configured.
 - npm install completed; lint, typecheck, and production build pass locally.
-- Pending: iOS Safari validation and Lighthouse PWA checks on device.
+- Added `npm run dev:host` script to simplify device validation.
+- Pending: iOS Safari validation (home screen install + navigation) and Lighthouse PWA checks.
 
 ### Phase 2: Backend integration and auth
 Goal: Connect to the existing backend safely.
@@ -359,3 +361,5 @@ Status: Not started
 - 2026-01-07: Phase 1 started; web client scaffolded in `/web` with Vite + React + TypeScript, routing, UI system primitives, and PWA manifest/service worker stubs.
 - 2026-01-07: Phase 0 marked complete with stack selection and updated architecture decision summary.
 - 2026-01-07: Phase 1 tooling run; lint, typecheck, and production build pass locally.
+- 2026-01-07: Phase 1 updated with device validation script and pending iOS/Lighthouse checklist.
+- 2026-01-07: Phase 1 added minimal app-shell caching in the service worker for installability baseline (no API caching).
