@@ -132,8 +132,9 @@ export const parseRecipeUpdateBody = (body: unknown): RecipeUpdateResult => {
   }
 
   const record = body as Record<string, unknown>;
-  const hasTitle = typeof record.title === "string";
-  const rawTitle = hasTitle ? record.title.trim() : undefined;
+  const titleValue = record.title;
+  const rawTitle = typeof titleValue === "string" ? titleValue.trim() : undefined;
+  const hasTitle = rawTitle !== undefined;
 
   if (rawTitle && rawTitle.length > MAX_TITLE_LENGTH) {
     return {
