@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/server/auth";
 import { retryIngestJob, serializeIngestJob } from "@/lib/server/ingest";
 import { loadStore, saveStore } from "@/lib/server/store";
+import { notFound, respondWithError } from "@/lib/server/apiErrors";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,7 @@ export async function POST(
     const store = await loadStore();
     const job = store.ingests[jobId];
     if (!job || job.userId !== userId) {
-      return NextResponse.json({ message: "Job not found." }, { status: 404 });
+      throw notFound("Job not found.");
     }
 
     const updated = retryIngestJob(job);
@@ -24,7 +25,6 @@ export async function POST(
 
     return NextResponse.json(serializeIngestJob(updated), { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/server/auth";
 import { loadStore, saveStore } from "@/lib/server/store";
 import { serializeRecipe, updateRecipe } from "@/lib/server/recipes";
+import { badRequest, notFound, respondWithError } from "@/lib/server/apiErrors";
 
 export const runtime = "nodejs";
 
@@ -23,12 +24,11 @@ export async function GET(
     const { id } = await context.params;
     const { recipe } = await getRecipe(userId, id);
     if (!recipe) {
-      return NextResponse.json({ message: "Recipe not found." }, { status: 404 });
+      throw notFound("Recipe not found.");
     }
     return NextResponse.json(serializeRecipe(recipe), { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }
 
@@ -41,12 +41,12 @@ export async function PATCH(
     const { id } = await context.params;
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ message: "Invalid request body." }, { status: 400 });
+      throw badRequest("Invalid request body.");
     }
 
     const { store, recipe } = await getRecipe(userId, id);
     if (!recipe) {
-      return NextResponse.json({ message: "Recipe not found." }, { status: 404 });
+      throw notFound("Recipe not found.");
     }
 
     const updated = updateRecipe(recipe, body);
@@ -55,8 +55,7 @@ export async function PATCH(
 
     return NextResponse.json(serializeRecipe(updated), { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }
 
@@ -69,7 +68,7 @@ export async function DELETE(
     const { id } = await context.params;
     const { store, recipe } = await getRecipe(userId, id);
     if (!recipe) {
-      return NextResponse.json({ message: "Recipe not found." }, { status: 404 });
+      throw notFound("Recipe not found.");
     }
 
     delete store.recipes[id];
@@ -77,7 +76,6 @@ export async function DELETE(
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }

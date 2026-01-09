@@ -18,6 +18,7 @@
   "dependencies": {
     "@clerk/nextjs": "latest",
     "next": "latest",
+    "pg": "latest",
     "react": "latest",
     "react-dom": "latest"
   },

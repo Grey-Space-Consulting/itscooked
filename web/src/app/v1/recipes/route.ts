@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/server/auth";
 import { loadStore, saveStore } from "@/lib/server/store";
 import { createRecipe, serializeRecipe, serializeSummary } from "@/lib/server/recipes";
+import { badRequest, respondWithError, validationError } from "@/lib/server/apiErrors";
 
 export const runtime = "nodejs";
 
@@ -16,8 +17,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(recipes, { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }
 
@@ -26,11 +26,11 @@ export async function POST(request: Request) {
     const { userId } = await requireAuth(request);
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ message: "Invalid request body." }, { status: 400 });
+      throw badRequest("Invalid request body.");
     }
 
     if (typeof body.title !== "string" || !body.title.trim()) {
-      return NextResponse.json({ message: "Recipe title is required." }, { status: 400 });
+      throw validationError("Recipe title is required.", { field: "title" });
     }
 
     const store = await loadStore();
@@ -40,7 +40,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(serializeRecipe(recipe), { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unauthorized";
-    return NextResponse.json({ message }, { status: 401 });
+    return respondWithError(error);
   }
 }

@@ -1,4 +1,5 @@
 import { createClerkClient, verifyToken } from "@clerk/nextjs/server";
+import { serverError, unauthorized } from "./apiErrors";
 
 type AuthResult = {
   userId: string;
@@ -17,21 +18,21 @@ export async function requireAuth(request: Request): Promise<AuthResult> {
   const token = getTokenFromHeader(request);
   const secretKey = process.env.CLERK_SECRET_KEY;
   if (!token) {
-    throw new Error("Missing authorization token.");
+    throw unauthorized("Missing authorization token.");
   }
   if (!secretKey) {
-    throw new Error("Missing Clerk secret key.");
+    throw serverError("Missing Clerk secret key.");
   }
 
   const { data, errors } = await verifyToken(token, { secretKey });
   const hasErrors = Array.isArray(errors) && errors.length > 0;
   if (!data || hasErrors) {
-    throw new Error("Invalid session token.");
+    throw unauthorized("Invalid session token.");
   }
 
   const payload = data as { sub?: string; sid?: string };
   if (!payload.sub) {
-    throw new Error("Invalid session token.");
+    throw unauthorized("Invalid session token.");
   }
 
   return {
@@ -43,7 +44,7 @@ export async function requireAuth(request: Request): Promise<AuthResult> {
 export async function fetchClerkUser(userId: string) {
   const secretKey = process.env.CLERK_SECRET_KEY;
   if (!secretKey) {
-    throw new Error("Missing Clerk secret key.");
+    throw serverError("Missing Clerk secret key.");
   }
   const clerk = createClerkClient({ secretKey });
   return clerk.users.getUser(userId);

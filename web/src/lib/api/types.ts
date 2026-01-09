@@ -4,7 +4,12 @@ export type ApiConfig = {
 
 export type ApiErrorPayload = {
   message?: string;
-  error?: string;
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+  };
+  code?: string;
   details?: unknown;
 };
 

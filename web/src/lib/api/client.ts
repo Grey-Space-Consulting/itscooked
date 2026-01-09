@@ -43,11 +43,10 @@ export async function apiRequest<T>(
       payload = undefined;
     }
 
-    throw new ApiError(
-      payload?.message ?? "Request failed",
-      response.status,
-      payload
-    );
+    const message =
+      payload?.error?.message ?? payload?.message ?? "Request failed";
+
+    throw new ApiError(message, response.status, payload);
   }
 
   if (response.status === 204) {

@@ -107,6 +107,9 @@ Record results here each time they are checked:
   - 2026-01-08: Phase 3 share-target verification (Tavily).
     - MDN share_target (experimental / limited availability): https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target
     - Chrome Web Share Target API docs (Chrome-only examples): https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
+  - 2026-01-08: Phase 2 backend persistence verification (Tavily).
+    - Vercel Postgres marketplace overview: https://vercel.com/docs/storage/vercel-postgres
+    - node-postgres (pg) docs: https://node-postgres.com/
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -258,13 +261,18 @@ Progress (2026-01-07):
 ### Phase 2: Backend integration and auth
 Goal: Connect to the existing backend safely.
 Tasks:
-- Implement API client and auth/session handling to match backend.
-- Implement read-only data flows for recipes and user profile.
-- Add API error handling and offline-aware UI states.
+- Frontend: Implement API client and auth/session handling to match backend.
+- Frontend: Implement read-only data flows for recipes and user profile.
+- Frontend: Add API error handling and offline-aware UI states.
+- Backend: Implement `/v1/health`, `/v1/version`, `/v1/me`, `/v1/recipes`, and `/v1/recipes/:id` with Clerk JWT verification.
+- Backend: Define a stable error response shape for auth, not-found, and validation failures.
+- Backend: Ensure staging/prod persistence for read-only recipe data (no ephemeral-only storage for Phase 2 completion).
 Deliverables:
-- Logged-in user can fetch recipe index and view details.
+- Frontend can fetch recipe index and detail with auth and render offline/error states.
+- Backend serves read-only `/v1` endpoints with auth and stable response shapes.
 Acceptance criteria:
-- No backend contract changes required.
+- Frontend and backend pass live checks (authed 200s; invalid tokens return 401).
+- Backend contract matches the documented v1 schema and remains additive.
 - Existing client behavior remains unchanged.
 Status: In progress
 Progress (2026-01-08):
@@ -285,6 +293,8 @@ Progress (2026-01-08):
 - Removed list routes and UI; list feature removed from scope.
 - Updated Home/Settings copy to remove list references and cleaned unused grocery env typing.
 - Verified client-side recipe list/detail and profile fetch flows against the v1 contract with Clerk token wiring and offline/error states; live backend validation still required.
+- Standardized `/v1` API error responses with a stable error shape for auth, validation, and not-found.
+- Added Postgres-backed persistence via `DATABASE_URL`/`POSTGRES_URL` with file-store fallback only for local dev; Vercel now requires a persistent store.
 Follow-ups (post-Phase 2, external validation):
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
 - 2026-01-08 live check: Clerk session token created via Backend API, but `GET /v1/me` and `GET /v1/recipes` returned 404 at https://itscooked.vercel.app (confirm correct API base or deploy backend routes).
@@ -292,20 +302,27 @@ Follow-ups (post-Phase 2, external validation):
 - Re-run live checks after deploying new `/v1` route handlers to confirm 200s and ingestion progression.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
 - Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
+- Provision a persistent Postgres database and set `DATABASE_URL`/`POSTGRES_URL` in Vercel before re-running live checks.
 - Keep `.env.local` untracked and located at `/web` (never under `src`).
 - Rotate Clerk keys after accidental commit and ensure env files are untracked.
 
 ### Phase 3: Ingestion entry points
 Goal: Users can add recipes via URL and iOS-friendly flow.
 Tasks:
-- Implement manual URL submission.
-- Implement iOS Shortcut-based share flow (if Web Share Target is unsupported).
-- Provide clear UX for “Queued / Processing / Ready / Error.”
+- Frontend: Implement manual URL submission.
+- Frontend: Implement iOS Shortcut-based share flow (if Web Share Target is unsupported).
+- Frontend: Provide clear UX for “Queued / Processing / Ready / Error.”
+- Backend: Implement `POST /v1/recipes/ingest` with URL validation and job persistence.
+- Backend: Implement `GET /v1/ingest/:job_id` and `POST /v1/ingest/:job_id/retry` with reliable status transitions.
+- Backend: Wire ingestion processing to create recipes, surface error codes, and return `recipe_id` when ready.
 Deliverables:
 - URL ingestion flow with status updates.
 - Shortcut instructions accessible in-app.
+- Backend ingestion endpoints returning job IDs and status updates.
 Acceptance criteria:
 - User can add a recipe URL from iOS and see processing status.
+- Backend returns job IDs, status progresses to ready, and recipe fetch succeeds.
+- Retry endpoint re-queues failed jobs and returns deterministic error details when it cannot.
 Status: In progress
 Progress (2026-01-08):
 - Added ingestion API client helpers for queue/retry/status with tolerant response parsing.
@@ -319,53 +336,64 @@ Progress (2026-01-08):
 ### Phase 4: Recipe view + edit
 Goal: Display parsed recipes and allow edits.
 Tasks:
-- Build recipe detail view with ingredients and steps.
-- Implement edit flow with validation and autosave.
-- Add cooking mode with step-by-step UI and wake-lock fallback.
-- Apply the UI system to recipe detail, edit, and cooking flows with modern, mobile-first layouts.
+- Frontend: Build recipe detail view with ingredients and steps.
+- Frontend: Implement edit flow with validation and autosave.
+- Frontend: Add cooking mode with step-by-step UI and wake-lock fallback.
+- Frontend: Apply the UI system to recipe detail, edit, and cooking flows with modern, mobile-first layouts.
+- Backend: Implement recipe detail and update endpoints with validation and normalization.
+- Backend: Persist edits, return updated recipes, and track `updated_at` for sync.
 Deliverables:
 - Full recipe detail experience including edits.
+- Backend persistence for recipe edits.
 Acceptance criteria:
-- Edits persist reliably and reflect backend state.
+- Edits persist reliably and reflect backend state, with server validation errors surfaced in UI.
 - Cooking mode is legible, touch-friendly, and consistent with the UI system.
 Status: Not started
 
 ### Phase 5: Offline-first and PWA polish
 Goal: Reliable offline usage and iOS install experience.
 Tasks:
-- Implement caching strategy (app shell + essential data).
-- Add offline indicators and last-synced timestamps.
-- Add update flow for service worker (prompt on new version).
+- Frontend: Implement caching strategy (app shell + essential data).
+- Frontend: Add offline indicators and last-synced timestamps.
+- Frontend: Add update flow for service worker (prompt on new version).
+- Backend: Provide cache-friendly headers (ETag/Last-Modified) and `updated_at` fields for sync.
 Deliverables:
 - App usable in low-connectivity environments.
+- Backend supports efficient revalidation for cached data.
 Acceptance criteria:
 - Works offline for recently viewed recipes.
+- Backend supports revalidation without breaking auth or caching behavior.
 Status: Not started
 
 ### Phase 6: Performance, accessibility, and QA
 Goal: Ensure production quality.
 Tasks:
-- Run performance profiling and fix critical bottlenecks.
-- Accessibility audit (WCAG 2.2 AA targets).
-- Add e2e smoke tests and critical path integration tests.
-- UI polish pass (spacing, typography hierarchy, component consistency).
+- Frontend: Run performance profiling and fix critical bottlenecks.
+- Frontend: Accessibility audit (WCAG 2.2 AA targets).
+- Frontend: Add e2e smoke tests and critical path integration tests.
+- Frontend: UI polish pass (spacing, typography hierarchy, component consistency).
+- Backend: Load-test core endpoints and fix API bottlenecks.
+- Backend: Add integration tests for auth and ingestion flows.
 Deliverables:
-- QA report and test coverage summary.
+- QA report and test coverage summary for frontend and backend.
 Acceptance criteria:
 - Meets performance budgets and accessibility criteria.
+- Backend meets API latency/error targets under expected load.
 - Visual QA checklist passes on iOS Safari and installed PWA.
 Status: Not started
 
 ### Phase 7: Release readiness
 Goal: Documentation, user onboarding, and monitoring.
 Tasks:
-- Create user onboarding flows (install, share, shortcuts).
-- Add analytics/monitoring hooks (privacy-respecting).
-- Write operational docs for routine maintenance.
+- Frontend: Create user onboarding flows (install, share, shortcuts).
+- Frontend: Add analytics/monitoring hooks (privacy-respecting).
+- Backend: Add monitoring/alerting for API health and ingestion failures.
+- Backend: Write operational docs for auth, ingestion, and data storage.
 Deliverables:
-- User guide and ops checklist.
+- User guide and ops checklist covering frontend and backend.
 Acceptance criteria:
 - Onboarding verified on real iOS device.
+- Backend runbooks and alerts validated in staging.
 Status: Not started
 
 ### Phase 8: Automated Vercel deployment (final phase)
@@ -374,11 +402,14 @@ Tasks:
 - Choose Vercel deployment target (static or SSR) based on Phase 0 architecture.
 - Create a single script that builds and deploys via Vercel CLI or API, then validates health checks.
 - Implement safe rollout strategy (separate domain/subdomain, versioned assets, rollback).
+- Add backend health validation steps (pre/post deploy) without altering the existing backend.
 Deliverables:
 - `deploy-client.sh` (or equivalent) with documented prerequisites.
+- Pre/post deploy validation output includes backend health and `/v1/version` checks.
 Acceptance criteria:
 - New client deploys without downtime and existing client remains unaffected.
 - Rollback path validated.
+- Backend health checks pass before and after client deployment.
 Status: Not started
 
 ## Quality gates (apply to all phases)
@@ -392,7 +423,7 @@ Status: Not started
 - iOS PWA feature gaps (Share Target, Background Sync, Wake Lock): mitigate with fallbacks (Shortcuts, manual refresh, keep-awake alternatives).
 - Service worker caching edge cases on Safari: implement explicit update prompts and cache-busting.
 - Scraping/ingestion fragility: keep ingestion server-side; ensure UI handles delays and errors gracefully.
-- Staging API uses a file-backed JSON store (or `/tmp` on Vercel), so data resets between deploys; replace with a persistent database before production.
+- Persistent storage requires `DATABASE_URL`/`POSTGRES_URL` in hosted environments; without it, `/v1` routes return server errors. File-backed storage is local-dev only.
 
 ## Changelog
 - 2026-01-07: Initial build plan created.
@@ -433,3 +464,5 @@ Status: Not started
 - 2026-01-08: Phase 3 started with ingestion API helpers, Home ingestion UI, polling, and iOS Shortcut guidance.
 - 2026-01-08: Clerk test user/session created via Backend API (phone identifier) for live checks; API base returned 404 for `/v1/me`/`/v1/recipes` and 405 for `/v1/recipes/ingest`.
 - 2026-01-08: Added `/v1` API route handlers in Next.js with Clerk token verification, file-backed JSON store, and stub ingestion processor.
+- 2026-01-08: Updated Phases 2-8 requirements to include explicit frontend and backend tasks, deliverables, and acceptance criteria.
+- 2026-01-08: Added Postgres-backed persistent store option, standardized `/v1` error responses, and CI workflow for lint/typecheck/build/PWA checks.
