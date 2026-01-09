@@ -32,8 +32,8 @@ const buildRedirectUrl = (params: {
   return query ? `/import?${query}` : "/import";
 };
 
-export default function ImportPage({ searchParams }: ImportPageProps) {
-  const { userId } = auth();
+export default async function ImportPage({ searchParams }: ImportPageProps) {
+  const { userId } = await auth();
   const initialUrl = typeof searchParams?.url === "string" ? searchParams.url : "";
   const initialTitle =
     typeof searchParams?.title === "string" ? searchParams.title : "";

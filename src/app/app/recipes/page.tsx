@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import RecipeLibrary, { type RecipeSummary } from "./recipe-library";
 
 export default async function RecipesPage() {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/sign-in");

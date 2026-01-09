@@ -162,7 +162,7 @@ Phase 6 - QA, testing, and release readiness
 | 0 - Standards and stack verification | complete | Versions and iOS PWA constraints verified; stack updated. Testing: N/A (docs-only) |
 | 1 - Project scaffold + auth + DB schema | complete | Scaffolded Next.js app, configured Clerk auth routes, defined Prisma schema + initial migration, added signed-in empty state and protected recipes API stub. Testing: not run (local Node 23.9.0; Prisma expects Node 24.12.0). |
 | 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. UI spec enhancements scheduled in Phase 3. Testing: not run. |
-| 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Follow-up: adjusted API route handler typing and Clerk middleware protect usage for Next.js 16 build. Testing: not run. |
+| 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Follow-up: adjusted API route handler typing, awaited Clerk auth() calls, and updated Clerk middleware protect usage for Next.js 16 build. Testing: not run. |
 | 4 - Grocery list + sharing flows | planned | Not started |
 | 5 - PWA and iOS polish | planned | Not started |
 | 6 - QA, testing, and release readiness | planned | Not started |
@@ -187,6 +187,7 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Fixed Next.js 16 route handler typing for /api/recipes/[id] to satisfy build-time type checks.
 - 2026-01-08: Fixed Clerk middleware to await auth() before calling protect() for Next.js 16 type checks.
 - 2026-01-08: Updated Clerk middleware to use auth.protect() per Clerk v6 middleware type expectations.
+- 2026-01-08: Awaited Clerk auth() calls in API routes and server components to match async typings.
 
 ## Next up
 - Phase 4: Generate grocery list from ingredients, build /app/recipes/[id]/grocery with GroceryChecklist + local persistence, and add Web Share API for grocery list sharing.

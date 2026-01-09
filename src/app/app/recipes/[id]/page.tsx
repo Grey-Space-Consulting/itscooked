@@ -14,7 +14,7 @@ type RecipeDetailPageProps = {
 export default async function RecipeDetailPage({
   params,
 }: RecipeDetailPageProps) {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/sign-in");

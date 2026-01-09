@@ -12,7 +12,7 @@ type RecipeEditPageProps = {
 };
 
 export default async function RecipeEditPage({ params }: RecipeEditPageProps) {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/sign-in");
