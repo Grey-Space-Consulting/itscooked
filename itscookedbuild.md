@@ -289,6 +289,7 @@ Follow-ups (post-Phase 2, external validation):
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
 - 2026-01-08 live check: Clerk session token created via Backend API, but `GET /v1/me` and `GET /v1/recipes` returned 404 at https://itscooked.vercel.app (confirm correct API base or deploy backend routes).
 - Clerk instance is configured for phone-only identifiers (email sign-in disabled).
+- Re-run live checks after deploying new `/v1` route handlers to confirm 200s and ingestion progression.
 - Validate PWA install + offline behavior on real iOS Safari after migration.
 - Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
 - Keep `.env.local` untracked and located at `/web` (never under `src`).
@@ -312,6 +313,8 @@ Progress (2026-01-08):
 - Added iOS Shortcut guidance and URL prefill support for share fallback.
 - Persisted recent ingestion jobs in local storage to keep status visible across sessions.
 - 2026-01-08 live check: `POST /v1/recipes/ingest` returned 405 at https://itscooked.vercel.app (confirm correct API base or backend route).
+- Implemented `/v1` API routes in the Next.js app (health, version, me, recipes, ingest) with Clerk token verification and a file-backed JSON store for staging.
+- Added a stub ingestion processor that advances queued jobs to ready and generates placeholder recipes until a real parser is wired.
 
 ### Phase 4: Recipe view + edit
 Goal: Display parsed recipes and allow edits.
@@ -389,6 +392,7 @@ Status: Not started
 - iOS PWA feature gaps (Share Target, Background Sync, Wake Lock): mitigate with fallbacks (Shortcuts, manual refresh, keep-awake alternatives).
 - Service worker caching edge cases on Safari: implement explicit update prompts and cache-busting.
 - Scraping/ingestion fragility: keep ingestion server-side; ensure UI handles delays and errors gracefully.
+- Staging API uses a file-backed JSON store (or `/tmp` on Vercel), so data resets between deploys; replace with a persistent database before production.
 
 ## Changelog
 - 2026-01-07: Initial build plan created.
@@ -428,3 +432,4 @@ Status: Not started
 - 2026-01-08: Phase 2 marked complete for client implementation; live backend validation moved to follow-ups.
 - 2026-01-08: Phase 3 started with ingestion API helpers, Home ingestion UI, polling, and iOS Shortcut guidance.
 - 2026-01-08: Clerk test user/session created via Backend API (phone identifier) for live checks; API base returned 404 for `/v1/me`/`/v1/recipes` and 405 for `/v1/recipes/ingest`.
+- 2026-01-08: Added `/v1` API route handlers in Next.js with Clerk token verification, file-backed JSON store, and stub ingestion processor.
