@@ -1,9 +1,20 @@
 import { SignIn } from "@clerk/nextjs";
 
-export default function SignInPage() {
+type SignInPageProps = {
+  searchParams?: {
+    redirect_url?: string;
+  };
+};
+
+export default function SignInPage({ searchParams }: SignInPageProps) {
+  const redirectUrl =
+    typeof searchParams?.redirect_url === "string"
+      ? searchParams.redirect_url
+      : "/app/recipes";
+
   return (
     <div className="auth-page">
-      <SignIn redirectUrl="/" />
+      <SignIn redirectUrl={redirectUrl} />
     </div>
   );
 }

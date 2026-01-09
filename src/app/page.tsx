@@ -49,12 +49,12 @@ export default function Home() {
                 </Link>
               </SignedOut>
               <SignedIn>
-                <Link href="/recipes" className={styles.primaryButton}>
+                <Link href="/app/recipes" className={styles.primaryButton}>
                   View recipes
                 </Link>
-                <button className={styles.secondaryButton} disabled>
-                  New import (coming soon)
-                </button>
+                <Link href="/app/recipes/new" className={styles.secondaryButton}>
+                  New import
+                </Link>
               </SignedIn>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function Home() {
               <p>Private to your account, ready for cleanup.</p>
             </div>
             <SignedIn>
-              <Link href="/recipes" className={styles.secondaryButton}>
+              <Link href="/app/recipes" className={styles.secondaryButton}>
                 Manage recipes
               </Link>
             </SignedIn>
@@ -105,7 +105,7 @@ export default function Home() {
               <div className={styles.emptyTitle}>No recipes yet.</div>
               <p>Drop in an Instagram or TikTok link to build your first list.</p>
               <div className={styles.emptyActions}>
-                <Link href="/recipes" className={styles.primaryButton}>
+                <Link href="/app/recipes/new" className={styles.primaryButton}>
                   Add a recipe link
                 </Link>
                 <button className={styles.ghostButton} disabled>

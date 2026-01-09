@@ -1,0 +1,67 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 27, 22, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.dialog {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 60px -40px rgba(31, 27, 22, 0.6);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.content {
+  display: grid;
+  gap: 8px;
+}
+
+.content h3 {
+  font-size: 18px;
+}
+
+.content p {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cancelButton {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmButton {
+  border: none;
+  background: #ef6a3c;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

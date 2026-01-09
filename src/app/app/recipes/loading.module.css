@@ -1,0 +1,43 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skeletonCard {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.skeletonLine {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f4e9da 0%, #f9f3e8 50%, #f4e9da 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+.skeletonLine.short {
+  width: 45%;
+}
+
+.skeletonLine.medium {
+  width: 70%;
+}
+
+.skeletonLine.long {
+  width: 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

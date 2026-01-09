@@ -1,0 +1,38 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 4vw, 36px);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
+}
+
+.card h1 {
+  font-size: 26px;
+}
+
+.card p {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.primaryButton {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -16px rgba(230, 87, 44, 0.8);
+  width: fit-content;
+}

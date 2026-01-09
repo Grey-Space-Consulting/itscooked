@@ -1,6 +1,6 @@
 # itscookedbuild.md
 Last updated: 2026-01-08
-Current phase: 3 - Import pipeline (Instagram/TikTok) (planned)
+Current phase: 4 - Grocery list + sharing flows (planned)
 Source of truth: This file governs all build phases and must be kept current.
 
 ## Non-negotiable AI agent rules (MUST FOLLOW)
@@ -94,6 +94,17 @@ These reflect current web standards and iOS realities. Re-check via Tavily at th
 - If extraction fails, return a clear error and allow manual editing if implemented.
 - Respect platform policies: only fetch public posts, on-demand, no crawling.
 
+## UI/UX requirements (MVP)
+- North star: "Save in 5 seconds. Cook without re-watching."
+- Principles: capture-first primary action, readable recipe cards, creator attribution + "View Original" link, no embedded video, mobile-first PWA.
+- Route map:
+  - Public: /, /sign-in, /sign-up
+  - Authed: /app -> /app/recipes, /app/recipes, /app/recipes/new, /app/recipes/[id], /app/recipes/[id]/edit, /app/recipes/[id]/grocery, /app/settings
+  - Share entry: /share (web share target), /import (?url=...)
+- Global layout: top app bar + bottom nav on mobile; sidebar on desktop; toast system, skeletons, confirm dialogs, empty states.
+- Core components: AppShell, RecipeCard, ImportBar, ImportProgress, IngredientList, InstructionList, GroceryChecklist (local persistence per recipe), SourceAttribution.
+- Share flows: Android web share target to /share; iOS fallback via clipboard detection + optional Shortcut to /import; resume import after auth.
+
 ## Development phases (one at a time)
 Each phase includes required Tavily checks. Do not start the next phase until the current one is complete and marked in the Phase Tracker.
 
@@ -116,17 +127,21 @@ Phase 2 - Recipes CRUD (API + UI)
 Phase 3 - Import pipeline (Instagram/TikTok)
 - Tavily: confirm best current approach for Instagram and TikTok metadata access.
 - Implement URL validation, scraping, and extraction pipeline.
-- Add progress UI and failure states.
+- Build /app shell and route structure (AppShell, /app redirect, /app/recipes, /app/recipes/new, /app/settings).
+- Add ImportBar + ImportProgress UI, progress states, and failure UI with retries.
+- Add /share and /import entry routes with auth resume behavior.
+- Update library UI to include search, filter, sort, skeletons, empty states, toasts, and delete confirmation.
+- Add /app/recipes/[id]/edit for manual corrections (textarea split/join).
 
 Phase 4 - Grocery list + sharing flows
 - Generate grocery list from ingredients.
-- Add checklist UI (local state OK for MVP).
-- Implement mobile clipboard detection for iOS flow.
-- Add Web Share API for sharing list outwards.
+- Build /app/recipes/[id]/grocery with GroceryChecklist, local persistence, copy list, and reset.
+- Add Web Share API for sharing the grocery list outwards.
 
 Phase 5 - PWA and iOS polish
 - Manifest, icons, service worker, offline shell caching.
-- iOS install guidance UI (no beforeinstallprompt).
+- Add Android share_target manifest config; verify /share entry flow.
+- iOS install guidance UI (no beforeinstallprompt) in /app/settings.
 - Safe-area and standalone launch verification on iOS.
 
 Phase 6 - QA, testing, and release readiness
@@ -146,8 +161,8 @@ Phase 6 - QA, testing, and release readiness
 | --- | --- | --- |
 | 0 - Standards and stack verification | complete | Versions and iOS PWA constraints verified; stack updated. Testing: N/A (docs-only) |
 | 1 - Project scaffold + auth + DB schema | complete | Scaffolded Next.js app, configured Clerk auth routes, defined Prisma schema + initial migration, added signed-in empty state and protected recipes API stub. Testing: not run (local Node 23.9.0; Prisma expects Node 24.12.0). |
-| 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. Testing: not run. |
-| 3 - Import pipeline (Instagram/TikTok) | planned | Not started |
+| 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. UI spec enhancements scheduled in Phase 3. Testing: not run. |
+| 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Testing: not run. |
 | 4 - Grocery list + sharing flows | planned | Not started |
 | 5 - PWA and iOS polish | planned | Not started |
 | 6 - QA, testing, and release readiness | planned | Not started |
@@ -156,6 +171,7 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Verified versions and iOS PWA constraints. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, npmjs.com/package/workbox-build, nodejs.org/en/download, nodejs.org/en/about/previous-releases, postgresql.org/about/newsarchive, developer.mozilla.org/en-US/docs/Web/Manifest, developer.mozilla.org/en-US/docs/Web/Manifest/share_target, developer.mozilla.org/en-US/docs/Web/API/Navigator/share, developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent, webkit.org/blog/13878/web-push-for-web-apps. Changes: locked stack versions, clarified iOS PWA requirements (standalone/fullscreen display, apple-touch-icon precedence, Web Share secure context, share_target limited availability, beforeinstallprompt non-standard, Web Push requires installed web app + user gesture).
 - 2026-01-08: Phase 1 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release, nodejs.org/en/download/current, postgresql.org/about/newsarchive. Changes: none.
 - 2026-01-08: Phase 2 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release/v24.12.0, postgresql.org/about/newsarchive. Changes: none.
+- 2026-01-08: Phase 3 version + platform access check for Next.js, React, Clerk, Prisma, Node LTS, Instagram oEmbed, and TikTok embed/oEmbed. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/about/previous-releases, nodejs.org/en/blog/release/v24.12.0, developers.facebook.com/docs/instagram/oembed, developers.facebook.com/docs/graph-api/reference/instagram-oembed, developers.tiktok.com/doc/embed-videos. Changes: versions unchanged (Next 16.1.1, React 19.2.3, @clerk/nextjs 6.36.5, Prisma 7.2.0, Node 24.12.0 LTS). Noted Instagram oEmbed requires app/client access token and is limited to embedding (metadata extraction disallowed); TikTok embed docs confirm oEmbed endpoint for embed markup.
 
 ## Decision log
 - 2026-01-08: Plan targets a Next.js full-stack MVP with Clerk auth and Postgres (final versions to be confirmed in Phase 0).
@@ -166,6 +182,8 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Completed Phase 0 checks; updated stack versions, iOS PWA constraints, and phase tracker.
 - 2026-01-08: Phase 1 scaffolded Next.js app, added Clerk auth routes, Prisma schema + initial migration with Prisma 7 config, basic signed-in UI state, and a protected recipes API stub.
 - 2026-01-08: Phase 2 delivered recipes list + detail pages, create/delete API endpoints with validation, and ownership enforcement in API routes.
+- 2026-01-08: Added UI/UX MVP requirements and mapped them into Phases 3-5 (routes, app shell, import, grocery, settings, share flows).
+- 2026-01-08: Phase 3 delivered import pipeline (metadata fetch + parsing), AppShell and /app routes, import/share entry flows with auth resume, library UI upgrades (search/filter/sort/skeletons/toasts/confirm), and manual edit page + API updates for edits.
 
 ## Next up
-- Phase 3: Confirm Instagram/TikTok metadata access approach and implement import pipeline with extraction + progress UI.
+- Phase 4: Generate grocery list from ingredients, build /app/recipes/[id]/grocery with GroceryChecklist + local persistence, and add Web Share API for grocery list sharing.

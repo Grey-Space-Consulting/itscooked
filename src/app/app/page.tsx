@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function RecipesRedirectPage() {
+export default function AppHomePage() {
   redirect("/app/recipes");
 }

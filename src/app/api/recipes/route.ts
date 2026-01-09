@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseRecipeCreateBody } from "@/lib/recipes";
+import { importRecipeFromUrl } from "@/lib/importer";
 
 export async function GET() {
   const { userId } = auth();
@@ -19,6 +20,8 @@ export async function GET() {
       title: true,
       sourceUrl: true,
       sourcePlatform: true,
+      originalCreator: true,
+      thumbnailUrl: true,
       createdAt: true,
     },
   });
@@ -51,30 +54,77 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const importResult = await importRecipeFromUrl({
+      url: parsed.data.url,
+      platform: parsed.data.sourcePlatform,
+      fallbackTitle: parsed.data.title,
+    });
+
+    const hasExtraction =
+      importResult.ingredientsList.length > 0 ||
+      importResult.instructionsList.length > 0;
+    const extractionStatus = hasExtraction
+      ? importResult.warnings.length > 0
+        ? "partial"
+        : "success"
+      : "failed";
+
     const recipe = await prisma.recipe.create({
       data: {
         userId,
         sourceUrl: parsed.data.url,
         sourcePlatform: parsed.data.sourcePlatform,
-        title: parsed.data.title ?? null,
+        title: importResult.title ?? null,
+        ingredientsList: importResult.ingredientsList.length
+          ? importResult.ingredientsList
+          : null,
+        instructionsList: importResult.instructionsList.length
+          ? importResult.instructionsList
+          : null,
+        originalCreator: importResult.originalCreator ?? null,
+        thumbnailUrl: importResult.thumbnailUrl ?? null,
       },
       select: {
         id: true,
         title: true,
         sourceUrl: true,
         sourcePlatform: true,
+        ingredientsList: true,
+        instructionsList: true,
+        originalCreator: true,
+        thumbnailUrl: true,
         createdAt: true,
       },
     });
 
-    return NextResponse.json({ recipe }, { status: 201 });
+    return NextResponse.json(
+      {
+        recipe,
+        extraction: {
+          status: extractionStatus,
+          warnings: importResult.warnings,
+        },
+      },
+      { status: 201 },
+    );
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
+      const existingRecipe = await prisma.recipe.findFirst({
+        where: { userId, sourceUrl: parsed.data.url },
+        select: {
+          id: true,
+          title: true,
+          sourceUrl: true,
+          sourcePlatform: true,
+          createdAt: true,
+        },
+      });
+
       return NextResponse.json(
-        { error: "That recipe link is already saved." },
+        { error: "That recipe link is already saved.", existingRecipe },
         { status: 409 },
       );
     }

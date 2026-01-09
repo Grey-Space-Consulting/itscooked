@@ -1,0 +1,6 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 4vw, 36px);
+}
