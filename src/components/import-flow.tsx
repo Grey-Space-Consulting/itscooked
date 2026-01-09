@@ -58,6 +58,7 @@ export default function ImportFlow({
   const [stepIndex, setStepIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ImportResponse | null>(null);
+  const isRunning = status === "running";
 
   const stepStates = useMemo(() => {
     return progressSteps.map((_, index): ProgressState => {
@@ -218,15 +219,15 @@ export default function ImportFlow({
           <button
             type="submit"
             className={styles.primaryButton}
-            disabled={status === "running"}
+            disabled={isRunning}
           >
-            {status === "running" ? "Importing..." : "Start import"}
+            {isRunning ? "Importing..." : "Start import"}
           </button>
           <button
             type="button"
             className={styles.secondaryButton}
             onClick={resetState}
-            disabled={status === "running"}
+            disabled={isRunning}
           >
             Clear
           </button>
@@ -315,7 +316,7 @@ export default function ImportFlow({
                 type="button"
                 className={styles.primaryButton}
                 onClick={handleImport}
-                disabled={status === "running"}
+                disabled={isRunning}
               >
                 Try again
               </button>
