@@ -1,23 +1,24 @@
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseRecipeUpdateBody } from "@/lib/recipes";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   const { userId } = auth();
+  const { id } = await params;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const recipe = await prisma.recipe.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     select: {
       id: true,
       title: true,
@@ -39,8 +40,9 @@ export async function GET(_request: Request, { params }: RouteContext) {
   return NextResponse.json({ recipe });
 }
 
-export async function PUT(request: Request, { params }: RouteContext) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   const { userId } = auth();
+  const { id } = await params;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -64,7 +66,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 
   const recipe = await prisma.recipe.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
   });
 
   if (!recipe) {
@@ -72,7 +74,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 
   const updated = await prisma.recipe.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       title: parsed.data.title,
       ingredientsList:
@@ -105,15 +107,16 @@ export async function PUT(request: Request, { params }: RouteContext) {
   return NextResponse.json({ recipe: updated });
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext) {
+export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   const { userId } = auth();
+  const { id } = await params;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const result = await prisma.recipe.deleteMany({
-    where: { id: params.id, userId },
+    where: { id, userId },
   });
 
   if (result.count === 0) {

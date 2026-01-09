@@ -162,7 +162,7 @@ Phase 6 - QA, testing, and release readiness
 | 0 - Standards and stack verification | complete | Versions and iOS PWA constraints verified; stack updated. Testing: N/A (docs-only) |
 | 1 - Project scaffold + auth + DB schema | complete | Scaffolded Next.js app, configured Clerk auth routes, defined Prisma schema + initial migration, added signed-in empty state and protected recipes API stub. Testing: not run (local Node 23.9.0; Prisma expects Node 24.12.0). |
 | 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. UI spec enhancements scheduled in Phase 3. Testing: not run. |
-| 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Testing: not run. |
+| 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Follow-up: adjusted API route handler typing for Next.js 16 build. Testing: not run. |
 | 4 - Grocery list + sharing flows | planned | Not started |
 | 5 - PWA and iOS polish | planned | Not started |
 | 6 - QA, testing, and release readiness | planned | Not started |
@@ -184,6 +184,8 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Phase 2 delivered recipes list + detail pages, create/delete API endpoints with validation, and ownership enforcement in API routes.
 - 2026-01-08: Added UI/UX MVP requirements and mapped them into Phases 3-5 (routes, app shell, import, grocery, settings, share flows).
 - 2026-01-08: Phase 3 delivered import pipeline (metadata fetch + parsing), AppShell and /app routes, import/share entry flows with auth resume, library UI upgrades (search/filter/sort/skeletons/toasts/confirm), and manual edit page + API updates for edits.
+- 2026-01-08: Fixed Next.js 16 route handler typing for /api/recipes/[id] to satisfy build-time type checks.
 
 ## Next up
 - Phase 4: Generate grocery list from ingredients, build /app/recipes/[id]/grocery with GroceryChecklist + local persistence, and add Web Share API for grocery list sharing.
+- Re-deploy to confirm the Vercel build passes.
