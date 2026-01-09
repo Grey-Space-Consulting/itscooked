@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseRecipeUpdateBody } from "@/lib/recipes";
@@ -81,18 +82,18 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         parsed.data.ingredientsList === undefined
           ? undefined
           : parsed.data.ingredientsList === null
-            ? null
+            ? Prisma.DbNull
             : parsed.data.ingredientsList.length
               ? parsed.data.ingredientsList
-              : null,
+              : Prisma.DbNull,
       instructionsList:
         parsed.data.instructionsList === undefined
           ? undefined
           : parsed.data.instructionsList === null
-            ? null
+            ? Prisma.DbNull
             : parsed.data.instructionsList.length
               ? parsed.data.instructionsList
-              : null,
+              : Prisma.DbNull,
     },
     select: {
       id: true,

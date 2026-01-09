@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
         title: importResult.title ?? null,
         ingredientsList: importResult.ingredientsList.length
           ? importResult.ingredientsList
-          : null,
+          : Prisma.DbNull,
         instructionsList: importResult.instructionsList.length
           ? importResult.instructionsList
-          : null,
+          : Prisma.DbNull,
         originalCreator: importResult.originalCreator ?? null,
         thumbnailUrl: importResult.thumbnailUrl ?? null,
       },
