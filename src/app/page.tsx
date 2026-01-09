@@ -44,15 +44,18 @@ export default function Home() {
                 <SignInButton mode="modal">
                   <button className={styles.primaryButton}>Get started</button>
                 </SignInButton>
+                <Link href="#recipes" className={styles.secondaryButton}>
+                  Preview saved list
+                </Link>
               </SignedOut>
               <SignedIn>
-                <button className={styles.primaryButton} disabled>
+                <Link href="/recipes" className={styles.primaryButton}>
+                  View recipes
+                </Link>
+                <button className={styles.secondaryButton} disabled>
                   New import (coming soon)
                 </button>
               </SignedIn>
-              <Link href="#recipes" className={styles.secondaryButton}>
-                Preview saved list
-              </Link>
             </div>
           </div>
 
@@ -91,9 +94,9 @@ export default function Home() {
               <p>Private to your account, ready for cleanup.</p>
             </div>
             <SignedIn>
-              <button className={styles.secondaryButton} disabled>
-                New recipe
-              </button>
+              <Link href="/recipes" className={styles.secondaryButton}>
+                Manage recipes
+              </Link>
             </SignedIn>
           </div>
 
@@ -102,9 +105,9 @@ export default function Home() {
               <div className={styles.emptyTitle}>No recipes yet.</div>
               <p>Drop in an Instagram or TikTok link to build your first list.</p>
               <div className={styles.emptyActions}>
-                <button className={styles.primaryButton} disabled>
-                  Import a recipe
-                </button>
+                <Link href="/recipes" className={styles.primaryButton}>
+                  Add a recipe link
+                </Link>
                 <button className={styles.ghostButton} disabled>
                   Paste from clipboard
                 </button>

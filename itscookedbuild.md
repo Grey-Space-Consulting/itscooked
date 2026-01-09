@@ -1,6 +1,6 @@
 # itscookedbuild.md
 Last updated: 2026-01-08
-Current phase: 2 - Recipes CRUD (API + UI) (planned)
+Current phase: 3 - Import pipeline (Instagram/TikTok) (planned)
 Source of truth: This file governs all build phases and must be kept current.
 
 ## Non-negotiable AI agent rules (MUST FOLLOW)
@@ -146,7 +146,7 @@ Phase 6 - QA, testing, and release readiness
 | --- | --- | --- |
 | 0 - Standards and stack verification | complete | Versions and iOS PWA constraints verified; stack updated. Testing: N/A (docs-only) |
 | 1 - Project scaffold + auth + DB schema | complete | Scaffolded Next.js app, configured Clerk auth routes, defined Prisma schema + initial migration, added signed-in empty state and protected recipes API stub. Testing: not run (local Node 23.9.0; Prisma expects Node 24.12.0). |
-| 2 - Recipes CRUD (API + UI) | planned | Not started |
+| 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. Testing: not run. |
 | 3 - Import pipeline (Instagram/TikTok) | planned | Not started |
 | 4 - Grocery list + sharing flows | planned | Not started |
 | 5 - PWA and iOS polish | planned | Not started |
@@ -155,6 +155,7 @@ Phase 6 - QA, testing, and release readiness
 ## Tavily check log
 - 2026-01-08: Verified versions and iOS PWA constraints. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, npmjs.com/package/workbox-build, nodejs.org/en/download, nodejs.org/en/about/previous-releases, postgresql.org/about/newsarchive, developer.mozilla.org/en-US/docs/Web/Manifest, developer.mozilla.org/en-US/docs/Web/Manifest/share_target, developer.mozilla.org/en-US/docs/Web/API/Navigator/share, developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent, webkit.org/blog/13878/web-push-for-web-apps. Changes: locked stack versions, clarified iOS PWA requirements (standalone/fullscreen display, apple-touch-icon precedence, Web Share secure context, share_target limited availability, beforeinstallprompt non-standard, Web Push requires installed web app + user gesture).
 - 2026-01-08: Phase 1 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release, nodejs.org/en/download/current, postgresql.org/about/newsarchive. Changes: none.
+- 2026-01-08: Phase 2 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release/v24.12.0, postgresql.org/about/newsarchive. Changes: none.
 
 ## Decision log
 - 2026-01-08: Plan targets a Next.js full-stack MVP with Clerk auth and Postgres (final versions to be confirmed in Phase 0).
@@ -164,6 +165,7 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Created initial build plan and phase structure.
 - 2026-01-08: Completed Phase 0 checks; updated stack versions, iOS PWA constraints, and phase tracker.
 - 2026-01-08: Phase 1 scaffolded Next.js app, added Clerk auth routes, Prisma schema + initial migration with Prisma 7 config, basic signed-in UI state, and a protected recipes API stub.
+- 2026-01-08: Phase 2 delivered recipes list + detail pages, create/delete API endpoints with validation, and ownership enforcement in API routes.
 
 ## Next up
-- Phase 2: Build recipes CRUD UI and endpoints with validation and error handling.
+- Phase 3: Confirm Instagram/TikTok metadata access approach and implement import pipeline with extraction + progress UI.
