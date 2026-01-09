@@ -257,6 +257,9 @@ Progress (2026-01-07):
 - Added `npm run pwa:check` static validation script; checks pass locally.
 - Added root-level `vercel.json` to build the `/web` app on Vercel (legacy SPA rewrites removed after Next.js migration).
 - Pending: iOS Safari validation (home screen install + navigation) and DevTools PWA checklist/offline verification.
+Progress (2026-01-08):
+- Installed `@types/pg` to satisfy Next.js TypeScript checks after adding Postgres persistence.
+- `npm run build` and `npm run pwa:check` pass locally on the Next.js app.
 
 ### Phase 2: Backend integration and auth
 Goal: Connect to the existing backend safely.
@@ -466,3 +469,4 @@ Status: Not started
 - 2026-01-08: Added `/v1` API route handlers in Next.js with Clerk token verification, file-backed JSON store, and stub ingestion processor.
 - 2026-01-08: Updated Phases 2-8 requirements to include explicit frontend and backend tasks, deliverables, and acceptance criteria.
 - 2026-01-08: Added Postgres-backed persistent store option, standardized `/v1` error responses, and CI workflow for lint/typecheck/build/PWA checks.
+- 2026-01-08: Added `@types/pg` and re-ran local Next.js build + PWA static checks successfully.
