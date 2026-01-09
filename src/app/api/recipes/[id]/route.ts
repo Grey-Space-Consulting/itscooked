@@ -80,15 +80,19 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       ingredientsList:
         parsed.data.ingredientsList === undefined
           ? undefined
-          : parsed.data.ingredientsList.length
-            ? parsed.data.ingredientsList
-            : null,
+          : parsed.data.ingredientsList === null
+            ? null
+            : parsed.data.ingredientsList.length
+              ? parsed.data.ingredientsList
+              : null,
       instructionsList:
         parsed.data.instructionsList === undefined
           ? undefined
-          : parsed.data.instructionsList.length
-            ? parsed.data.instructionsList
-            : null,
+          : parsed.data.instructionsList === null
+            ? null
+            : parsed.data.instructionsList.length
+              ? parsed.data.instructionsList
+              : null,
     },
     select: {
       id: true,
