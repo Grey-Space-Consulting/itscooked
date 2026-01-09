@@ -6,12 +6,13 @@ import EditRecipeForm from "./recipe-edit-form";
 import styles from "./recipe-edit.module.css";
 
 type RecipeEditPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function RecipeEditPage({ params }: RecipeEditPageProps) {
+  const { id } = await params;
   const { userId } = await auth();
 
   if (!userId) {
@@ -19,7 +20,7 @@ export default async function RecipeEditPage({ params }: RecipeEditPageProps) {
   }
 
   const recipe = await prisma.recipe.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     select: {
       id: true,
       title: true,

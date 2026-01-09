@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import styles from "./share.module.css";
 
 type SharePageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     url?: string;
     text?: string;
     title?: string;
-  };
+  }>;
 };
 
 const extractUrl = (value: string | undefined) => {
@@ -23,9 +23,12 @@ const extractUrl = (value: string | undefined) => {
   return match[0].replace(/[),.]+$/g, "");
 };
 
-export default function SharePage({ searchParams }: SharePageProps) {
-  const directUrl = extractUrl(searchParams?.url);
-  const textUrl = extractUrl(searchParams?.text ?? searchParams?.title);
+export default async function SharePage({ searchParams }: SharePageProps) {
+  const resolvedSearchParams = await searchParams;
+  const directUrl = extractUrl(resolvedSearchParams?.url);
+  const textUrl = extractUrl(
+    resolvedSearchParams?.text ?? resolvedSearchParams?.title,
+  );
   const url = directUrl ?? textUrl;
 
   if (url) {

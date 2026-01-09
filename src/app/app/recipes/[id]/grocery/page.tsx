@@ -7,14 +7,15 @@ import { normalizeStringList } from "@/lib/recipes";
 import styles from "./recipe-grocery.module.css";
 
 type RecipeGroceryPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function RecipeGroceryPage({
   params,
 }: RecipeGroceryPageProps) {
+  const { id } = await params;
   const { userId } = await auth();
 
   if (!userId) {
@@ -22,7 +23,7 @@ export default async function RecipeGroceryPage({
   }
 
   const recipe = await prisma.recipe.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     select: {
       id: true,
       title: true,

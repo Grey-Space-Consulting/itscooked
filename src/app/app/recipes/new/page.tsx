@@ -1,18 +1,26 @@
 import ImportFlow from "@/components/import-flow";
 
 type RecipesNewPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     url?: string;
     title?: string;
     autostart?: string;
-  };
+  }>;
 };
 
-export default function RecipesNewPage({ searchParams }: RecipesNewPageProps) {
-  const initialUrl = typeof searchParams?.url === "string" ? searchParams.url : "";
+export default async function RecipesNewPage({
+  searchParams,
+}: RecipesNewPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const initialUrl =
+    typeof resolvedSearchParams?.url === "string"
+      ? resolvedSearchParams.url
+      : "";
   const initialTitle =
-    typeof searchParams?.title === "string" ? searchParams.title : "";
-  const autoStart = searchParams?.autostart === "1";
+    typeof resolvedSearchParams?.title === "string"
+      ? resolvedSearchParams.title
+      : "";
+  const autoStart = resolvedSearchParams?.autostart === "1";
 
   return (
     <ImportFlow

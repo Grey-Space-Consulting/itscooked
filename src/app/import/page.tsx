@@ -5,11 +5,11 @@ import { ToastProvider } from "@/components/toast";
 import styles from "./import.module.css";
 
 type ImportPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     url?: string;
     title?: string;
     autostart?: string;
-  };
+  }>;
 };
 
 const buildRedirectUrl = (params: {
@@ -33,11 +33,17 @@ const buildRedirectUrl = (params: {
 };
 
 export default async function ImportPage({ searchParams }: ImportPageProps) {
+  const resolvedSearchParams = await searchParams;
   const { userId } = await auth();
-  const initialUrl = typeof searchParams?.url === "string" ? searchParams.url : "";
+  const initialUrl =
+    typeof resolvedSearchParams?.url === "string"
+      ? resolvedSearchParams.url
+      : "";
   const initialTitle =
-    typeof searchParams?.title === "string" ? searchParams.title : "";
-  const autoStart = searchParams?.autostart === "1";
+    typeof resolvedSearchParams?.title === "string"
+      ? resolvedSearchParams.title
+      : "";
+  const autoStart = resolvedSearchParams?.autostart === "1";
 
   if (!userId) {
     const returnTo = buildRedirectUrl({

@@ -6,14 +6,15 @@ import { formatPlatformLabel, normalizeStringList } from "@/lib/recipes";
 import styles from "./recipe-detail.module.css";
 
 type RecipeDetailPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function RecipeDetailPage({
   params,
 }: RecipeDetailPageProps) {
+  const { id } = await params;
   const { userId } = await auth();
 
   if (!userId) {
@@ -21,7 +22,7 @@ export default async function RecipeDetailPage({
   }
 
   const recipe = await prisma.recipe.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     select: {
       id: true,
       title: true,

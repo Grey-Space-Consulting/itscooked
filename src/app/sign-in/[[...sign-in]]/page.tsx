@@ -1,15 +1,16 @@
 import { SignIn } from "@clerk/nextjs";
 
 type SignInPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     redirect_url?: string;
-  };
+  }>;
 };
 
-export default function SignInPage({ searchParams }: SignInPageProps) {
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const resolvedSearchParams = await searchParams;
   const redirectUrl =
-    typeof searchParams?.redirect_url === "string"
-      ? searchParams.redirect_url
+    typeof resolvedSearchParams?.redirect_url === "string"
+      ? resolvedSearchParams.redirect_url
       : "/app/recipes";
 
   return (
