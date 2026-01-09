@@ -1,6 +1,6 @@
 # itscookedbuild.md
 Last updated: 2026-01-08
-Current phase: 4 - Grocery list + sharing flows (planned)
+Current phase: 5 - PWA and iOS polish (planned)
 Source of truth: This file governs all build phases and must be kept current.
 
 ## Non-negotiable AI agent rules (MUST FOLLOW)
@@ -163,7 +163,7 @@ Phase 6 - QA, testing, and release readiness
 | 1 - Project scaffold + auth + DB schema | complete | Scaffolded Next.js app, configured Clerk auth routes, defined Prisma schema + initial migration, added signed-in empty state and protected recipes API stub. Testing: not run (local Node 23.9.0; Prisma expects Node 24.12.0). |
 | 2 - Recipes CRUD (API + UI) | complete | Added recipe list + detail pages, CRUD API (GET/POST/DELETE) with validation and ownership checks. UI spec enhancements scheduled in Phase 3. Testing: not run. |
 | 3 - Import pipeline (Instagram/TikTok) | complete | Added import pipeline with metadata fetch (TikTok oEmbed, Instagram HTML meta), URL validation, and heuristic parsing. Built AppShell + /app routes, import UI with progress/failure handling, /share + /import entry flows with auth resume, library search/filter/sort/toasts/skeletons, and manual edit page. Follow-up: adjusted API route handler typing, awaited Clerk auth() calls, updated Clerk middleware protect usage for Next.js 16 build, ensured Prisma client generation during build, added a build-time DATABASE_URL fallback for Prisma config loading, updated JSON null handling for recipes to use Prisma DbNull, and fixed recipe list state updates for TS narrowing. Testing: not run. |
-| 4 - Grocery list + sharing flows | planned | Not started |
+| 4 - Grocery list + sharing flows | complete | Added grocery checklist page with local persistence, copy/share actions, and linked it from recipe detail. Testing: not run. |
 | 5 - PWA and iOS polish | planned | Not started |
 | 6 - QA, testing, and release readiness | planned | Not started |
 
@@ -172,6 +172,7 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Phase 1 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release, nodejs.org/en/download/current, postgresql.org/about/newsarchive. Changes: none.
 - 2026-01-08: Phase 2 version check for Next.js, React, Clerk, Prisma, Node LTS, and PostgreSQL. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/blog/release/v24.12.0, postgresql.org/about/newsarchive. Changes: none.
 - 2026-01-08: Phase 3 version + platform access check for Next.js, React, Clerk, Prisma, Node LTS, Instagram oEmbed, and TikTok embed/oEmbed. Sources: npmjs.com/package/next, npmjs.com/package/react, npmjs.com/package/@clerk/nextjs, npmjs.com/package/prisma, nodejs.org/en/about/previous-releases, nodejs.org/en/blog/release/v24.12.0, developers.facebook.com/docs/instagram/oembed, developers.facebook.com/docs/graph-api/reference/instagram-oembed, developers.tiktok.com/doc/embed-videos. Changes: versions unchanged (Next 16.1.1, React 19.2.3, @clerk/nextjs 6.36.5, Prisma 7.2.0, Node 24.12.0 LTS). Noted Instagram oEmbed requires app/client access token and is limited to embedding (metadata extraction disallowed); TikTok embed docs confirm oEmbed endpoint for embed markup.
+- 2026-01-08: Phase 4 version + API check for Next.js, React, Node LTS, and Web Share API. Sources: npmjs.com/package/next, npmjs.com/package/react, endoflife.date/nodejs, developer.mozilla.org/en-US/docs/Web/API/Navigator/share. Changes: versions unchanged (Next 16.1.1, React 19.2.3, Node 24 LTS current). Web Share API remains secure-context only, requires user activation, and is not Baseline in all browsers.
 
 ## Decision log
 - 2026-01-08: Plan targets a Next.js full-stack MVP with Clerk auth and Postgres (final versions to be confirmed in Phase 0).
@@ -192,7 +193,9 @@ Phase 6 - QA, testing, and release readiness
 - 2026-01-08: Added a build-time DATABASE_URL fallback for Prisma generate to avoid config env errors in Vercel.
 - 2026-01-08: Switched recipe JSON null handling to Prisma DbNull for Prisma 7 type safety.
 - 2026-01-08: Captured newly created recipe in a local constant to satisfy TS narrowing in the recipe list state update.
+- 2026-01-08: Phase 4 delivered grocery list page with GroceryChecklist, local check persistence, copy/share actions, and a recipe detail link to the grocery view.
 
 ## Next up
-- Phase 4: Generate grocery list from ingredients, build /app/recipes/[id]/grocery with GroceryChecklist + local persistence, and add Web Share API for grocery list sharing.
+- Phase 5: Add manifest, icons, service worker/offline shell caching, Android share_target config, and iOS install guidance in /app/settings.
+- Verify safe-area padding and standalone launch behavior on iOS Safari.
 - Re-deploy to confirm the Vercel build passes with the recipe list state update fix.

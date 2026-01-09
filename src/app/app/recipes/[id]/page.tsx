@@ -58,6 +58,12 @@ export default async function RecipeDetailPage({
         </div>
         <div className={styles.actions}>
           <Link
+            href={`/app/recipes/${recipe.id}/grocery`}
+            className={styles.primaryButton}
+          >
+            Grocery list
+          </Link>
+          <Link
             href={`/app/recipes/${recipe.id}/edit`}
             className={styles.secondaryButton}
           >
@@ -67,7 +73,7 @@ export default async function RecipeDetailPage({
             href={recipe.sourceUrl}
             target="_blank"
             rel="noreferrer"
-            className={styles.primaryButton}
+            className={styles.secondaryButton}
           >
             View original
           </a>

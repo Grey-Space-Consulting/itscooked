@@ -1,0 +1,137 @@
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header h2 {
+  font-size: 22px;
+}
+
+.header p {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.countPill {
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.primaryButton {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -16px rgba(230, 87, 44, 0.8);
+}
+
+.secondaryButton {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghostButton {
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghostButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.item input {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+
+.itemText {
+  flex: 1;
+}
+
+.item[data-checked="true"] {
+  background: #f5efe4;
+  color: var(--ink-soft);
+}
+
+.item[data-checked="true"] .itemText {
+  text-decoration: line-through;
+}
+
+.emptyState {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: grid;
+  gap: 10px;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.emptyState h3 {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .actions {
+    justify-content: flex-start;
+  }
+}
