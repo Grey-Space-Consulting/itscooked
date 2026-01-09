@@ -231,6 +231,30 @@
   border: 1px solid rgba(211, 117, 87, 0.28);
 }
 
+.badge.is-muted {
+  background: rgba(126, 116, 107, 0.12);
+  color: var(--color-muted);
+  border: 1px solid rgba(126, 116, 107, 0.3);
+}
+
+.badge.is-error {
+  background: rgba(182, 74, 47, 0.12);
+  color: var(--color-spice);
+  border: 1px solid rgba(182, 74, 47, 0.28);
+}
+
+.badge-action {
+  cursor: pointer;
+}
+
+.list-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .list {
   display: grid;
   gap: var(--space-3);
@@ -253,6 +277,27 @@
 .list-item span {
   font-size: var(--text-sm);
   color: var(--color-muted);
+}
+
+.shortcut-link code {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--color-line);
+  font-size: var(--text-xs);
+}
+
+.shortcut-steps {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+}
+
+.shortcut-steps li {
+  margin-bottom: var(--space-2);
 }
 
 .btn {

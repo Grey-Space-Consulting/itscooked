@@ -49,3 +49,15 @@ export type RecipeDetail = {
   ingredients?: RecipeIngredient[];
   steps?: RecipeStep[];
 };
+
+export type IngestStatus = "queued" | "processing" | "ready" | "error";
+
+export type IngestJob = {
+  id: string;
+  status: IngestStatus;
+  sourceUrl?: string;
+  recipeId?: string;
+  statusMessage?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};

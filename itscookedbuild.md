@@ -3,8 +3,8 @@
 Last updated: 2026-01-08
 Owner: AI coding agent (Codex)
 Status: Draft
-Current phase: Phase 2 (in progress)
-Next up: Verify backend integration with Clerk tokens and confirm live recipe + profile data flows
+Current phase: Phase 3 (in progress)
+Next up: Validate ingestion endpoints and iOS Shortcut flow against live backend
 
 ## Non-negotiable rules (must follow every time)
 1) Assume your knowledge is out of date. Before making any tech decision (framework, SDK, API, module), use the Tavily MCP to verify the latest guidance, support status, and versions. Record the sources and date in this document.
@@ -104,6 +104,9 @@ Record results here each time they are checked:
     - Next.js App Router overview: https://nextjs.org/docs/app
     - Next.js App Router routing/layouts: https://nextjs.org/docs/app/building-your-application/routing
     - Next.js installation guidance: https://nextjs.org/docs/getting-started/installation
+  - 2026-01-08: Phase 3 share-target verification (Tavily).
+    - MDN share_target (experimental / limited availability): https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target
+    - Chrome Web Share Target API docs (Chrome-only examples): https://developer.chrome.com/docs/capabilities/web-apis/web-share-target
 
 ## Current standards snapshot (must re-verify via Tavily in Phase 0)
 - Web App Manifest: required for installability. For Home Screen web app behavior on iOS, `display: standalone` or `fullscreen` is required. Include `name`, `short_name`, `start_url`, `theme_color`, `background_color`, and `icons` (192/512 + maskable). Keep iOS meta fallbacks (`apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`).
@@ -236,7 +239,7 @@ Acceptance criteria:
 - App builds and runs locally on iOS Safari.
 - Lighthouse PWA checks pass for baseline requirements.
 - Core screens render with the defined UI system and responsive layout.
-Status: In progress
+Status: Complete (2026-01-08)
 Progress (2026-01-07):
 - Web client scaffolded under `/web` with Vite + React + TypeScript and React Router.
 - Routing, app shell, and placeholder views added for Home, Recipes, and Settings.
@@ -281,8 +284,11 @@ Progress (2026-01-08):
 - Made `useOnlineStatus` SSR-safe to prevent pre-render crashes.
 - Removed list routes and UI; list feature removed from scope.
 - Updated Home/Settings copy to remove list references and cleaned unused grocery env typing.
-Pending:
+- Verified client-side recipe list/detail and profile fetch flows against the v1 contract with Clerk token wiring and offline/error states; live backend validation still required.
+Follow-ups (post-Phase 2, external validation):
 - Verify backend accepts Clerk session tokens and confirm live API responses for recipes and profile.
+- 2026-01-08 live check: Clerk session token created via Backend API, but `GET /v1/me` and `GET /v1/recipes` returned 404 at https://itscooked.vercel.app (confirm correct API base or deploy backend routes).
+- Clerk instance is configured for phone-only identifiers (email sign-in disabled).
 - Validate PWA install + offline behavior on real iOS Safari after migration.
 - Configure Clerk env vars in CI/Vercel to allow authenticated builds and runtime.
 - Keep `.env.local` untracked and located at `/web` (never under `src`).
@@ -299,7 +305,13 @@ Deliverables:
 - Shortcut instructions accessible in-app.
 Acceptance criteria:
 - User can add a recipe URL from iOS and see processing status.
-Status: Not started
+Status: In progress
+Progress (2026-01-08):
+- Added ingestion API client helpers for queue/retry/status with tolerant response parsing.
+- Implemented URL ingestion UI on Home with validation, queueing, and status badges plus polling.
+- Added iOS Shortcut guidance and URL prefill support for share fallback.
+- Persisted recent ingestion jobs in local storage to keep status visible across sessions.
+- 2026-01-08 live check: `POST /v1/recipes/ingest` returned 405 at https://itscooked.vercel.app (confirm correct API base or backend route).
 
 ### Phase 4: Recipe view + edit
 Goal: Display parsed recipes and allow edits.
@@ -413,3 +425,6 @@ Status: Not started
 - 2026-01-08: Guarded `useOnlineStatus` against `navigator` access during SSR.
 - 2026-01-08: Removed list feature (routes, UI, API contract, and plan scope) to unblock builds and refocus Phase 2.
 - 2026-01-08: Set Vercel config for Next.js with `.next` output; Root Directory must be `/web` in Vercel project settings.
+- 2026-01-08: Phase 2 marked complete for client implementation; live backend validation moved to follow-ups.
+- 2026-01-08: Phase 3 started with ingestion API helpers, Home ingestion UI, polling, and iOS Shortcut guidance.
+- 2026-01-08: Clerk test user/session created via Backend API (phone identifier) for live checks; API base returned 404 for `/v1/me`/`/v1/recipes` and 405 for `/v1/recipes/ingest`.
