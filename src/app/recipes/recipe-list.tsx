@@ -80,13 +80,14 @@ export default function RecipeList({ initialRecipes }: RecipeListProps) {
         recipe?: RecipeSummary;
         error?: string;
       };
+      const recipe = data.recipe;
 
-      if (!response.ok || !data.recipe) {
+      if (!response.ok || !recipe) {
         setError(data.error ?? "Unable to save that recipe.");
         return;
       }
 
-      setRecipes((prev) => [data.recipe, ...prev]);
+      setRecipes((prev) => [recipe, ...prev]);
       setUrl("");
       setTitle("");
     } catch {
