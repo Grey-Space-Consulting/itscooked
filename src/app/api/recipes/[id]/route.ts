@@ -10,7 +10,7 @@ type RouteContext = {
 };
 
 export async function GET(_request: NextRequest, { params }: RouteContext) {
-+ const { userId } = await auth();
+  const { userId } = await auth();
   const { id } = await params;
 
   if (!userId) {
@@ -42,7 +42,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   const { userId } = await auth();
-  const { id } = params;
+  const { id } = await params;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
